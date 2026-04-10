@@ -1,8 +1,8 @@
-// src/ast/destructiveAssign.h
+// src/ast/assignments/destructiveAssign.h
 #ifndef DESTRUCTIVE_ASSIGN_H
 #define DESTRUCTIVE_ASSIGN_H
 
-#include "./abs_nodes/ast.h"
+#include "../abs_nodes/ast.h"
 #include <memory>
 #include <string>
 

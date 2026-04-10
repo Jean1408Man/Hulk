@@ -1,7 +1,7 @@
 #ifndef VARIABLE_REFERENCE_H
 #define VARIABLE_REFERENCE_H
 
-#include "./abs_nodes/ast.h"
+#include "../abs_nodes/ast.h"
 #include <string>
 
 namespace Hulk {
