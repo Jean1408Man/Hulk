@@ -1,12 +1,12 @@
 ﻿#ifndef STRING_NODE_H
 #define STRING_NODE_H
 
-#include "../abs_nodes/ast.h"
+#include "../abs_nodes/expr.h"
 #include <string>
 
 namespace Hulk {
 
-    class String : public ASTnode {
+    class String : public Expr {
     private:
         std::string value;
 

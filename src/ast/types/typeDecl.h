@@ -1,7 +1,8 @@
 #ifndef TYPE_DECL_H
 #define TYPE_DECL_H
 
-#include "../abs_nodes/ast.h"
+#include "../abs_nodes/decl.h"
+#include "../abs_nodes/expr.h"
 #include "../functions/param.h"
 #include "typeMemberAttribute.h"
 #include "typeMemberMethod.h"
@@ -14,18 +15,18 @@ namespace Hulk {
     struct TypeMember {
         enum class Kind { Attribute, Method };
         Kind kind;
-        std::unique_ptr<ASTnode> node;
+        std::unique_ptr<Decl> node;
 
-        TypeMember(Kind kind, std::unique_ptr<ASTnode> node)
+        TypeMember(Kind kind, std::unique_ptr<Decl> node)
             : kind(kind), node(std::move(node)) {}
     };
 
-    class TypeDecl : public ASTnode {
+    class TypeDecl : public Decl {
     private:
         std::string name;
         std::vector<Param> ctorParams;
         std::string parentName;
-        std::vector<std::unique_ptr<ASTnode>> parentArgs;
+        std::vector<std::unique_ptr<Expr>> parentArgs;
         std::vector<TypeMember> members;
 
     public:
@@ -43,7 +44,7 @@ namespace Hulk {
         TypeDecl(const std::string& name,
                  std::vector<Param> ctorParams,
                  const std::string& parentName,
-                 std::vector<std::unique_ptr<ASTnode>> parentArgs,
+                 std::vector<std::unique_ptr<Expr>> parentArgs,
                  std::vector<TypeMember> members);
 
         const std::string& GetName() const;
@@ -51,7 +52,7 @@ namespace Hulk {
         bool HasCtorParams() const;
         const std::string& GetParentName() const;
         bool HasParent() const;
-        const std::vector<std::unique_ptr<ASTnode>>& GetParentArgs() const;
+        const std::vector<std::unique_ptr<Expr>>& GetParentArgs() const;
         const std::vector<TypeMember>& GetMembers() const;
 
         std::string ToString() const override;

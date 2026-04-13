@@ -1,21 +1,21 @@
 #ifndef PRINT_H
 #define PRINT_H
 
-#include "../abs_nodes/ast.h"
+#include "../abs_nodes/expr.h"
 #include <memory>
 
 namespace Hulk {
 
-    class Print : public ASTnode {
+    class Print : public Expr {
     private:
-        std::unique_ptr<ASTnode> expr;
+        std::unique_ptr<Expr> expr;
 
     public:
-        explicit Print(std::unique_ptr<ASTnode> expression);
+        explicit Print(std::unique_ptr<Expr> expression);
 
         virtual ~Print() = default;
 
-        ASTnode* GetExpr() const;
+        Expr* GetExpr() const;
 
         std::string ToString() const override;
     };

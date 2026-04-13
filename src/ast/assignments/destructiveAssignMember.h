@@ -1,26 +1,26 @@
 #ifndef DESTRUCTIVE_ASSIGN_MEMBER_H
 #define DESTRUCTIVE_ASSIGN_MEMBER_H
 
-#include "../abs_nodes/ast.h"
+#include "../abs_nodes/expr.h"
 #include <memory>
 #include <string>
 
 namespace Hulk {
 
-    class DestructiveAssignMember : public ASTnode {
+    class DestructiveAssignMember : public Expr {
     private:
-        std::unique_ptr<ASTnode> object;
+        std::unique_ptr<Expr> object;
         std::string memberName;
-        std::unique_ptr<ASTnode> value;
+        std::unique_ptr<Expr> value;
 
     public:
-        DestructiveAssignMember(std::unique_ptr<ASTnode> object,
+        DestructiveAssignMember(std::unique_ptr<Expr> object,
                                 const std::string& memberName,
-                                std::unique_ptr<ASTnode> value);
+                                std::unique_ptr<Expr> value);
 
-        ASTnode* GetObject() const;
+        Expr* GetObject() const;
         const std::string& GetMemberName() const;
-        ASTnode* GetValue() const;
+        Expr* GetValue() const;
 
         std::string ToString() const override;
     };

@@ -1,11 +1,11 @@
 ﻿#ifndef NUMBER_NODE_H
 #define NUMBER_NODE_H
 
-#include "../abs_nodes/ast.h"
+#include "../abs_nodes/expr.h"
 
 namespace Hulk {
 
-    class Number : public ASTnode {
+    class Number : public Expr {
     private:
         double value;
 

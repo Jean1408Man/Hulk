@@ -1,14 +1,14 @@
 #ifndef PROTOCOL_DECL_H
 #define PROTOCOL_DECL_H
 
-#include "../abs_nodes/ast.h"
+#include "../abs_nodes/decl.h"
 #include "protocolMethodSig.h"
 #include <string>
 #include <vector>
 
 namespace Hulk {
 
-    class ProtocolDecl : public ASTnode {
+    class ProtocolDecl : public Decl {
     private:
         std::string name;
         std::string parentName;

@@ -1,26 +1,26 @@
 #ifndef VECTOR_GENERATOR_H
 #define VECTOR_GENERATOR_H
 
-#include "../abs_nodes/ast.h"
+#include "../abs_nodes/expr.h"
 #include <memory>
 #include <string>
 
 namespace Hulk {
 
-    class VectorGenerator : public ASTnode {
+    class VectorGenerator : public Expr {
     private:
-        std::unique_ptr<ASTnode> body;
+        std::unique_ptr<Expr> body;
         std::string varName;
-        std::unique_ptr<ASTnode> iterable;
+        std::unique_ptr<Expr> iterable;
 
     public:
-        VectorGenerator(std::unique_ptr<ASTnode> body,
+        VectorGenerator(std::unique_ptr<Expr> body,
                         const std::string& varName,
-                        std::unique_ptr<ASTnode> iterable);
+                        std::unique_ptr<Expr> iterable);
 
-        ASTnode* GetBody() const;
+        Expr* GetBody() const;
         const std::string& GetVarName() const;
-        ASTnode* GetIterable() const;
+        Expr* GetIterable() const;
 
         std::string ToString() const override;
     };

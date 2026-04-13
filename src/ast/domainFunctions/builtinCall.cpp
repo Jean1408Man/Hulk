@@ -3,11 +3,11 @@
 namespace Hulk {
 
     BuiltinCall::BuiltinCall(BuiltinFunc func,
-                             std::vector<std::unique_ptr<ASTnode>> args)
+                             std::vector<std::unique_ptr<Expr>> args)
         : func(func), args(std::move(args)) {}
 
     BuiltinFunc BuiltinCall::GetFunc() const { return func; }
-    const std::vector<std::unique_ptr<ASTnode>>& BuiltinCall::GetArgs() const { return args; }
+    const std::vector<std::unique_ptr<Expr>>& BuiltinCall::GetArgs() const { return args; }
 
     std::string BuiltinCall::ToString() const {
         std::string name;

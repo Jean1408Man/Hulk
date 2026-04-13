@@ -2,18 +2,18 @@
 
 namespace Hulk {
 
-    For::For(const std::string& varName, std::unique_ptr<ASTnode> iterable, std::unique_ptr<ASTnode> body)
+    For::For(const std::string& varName, std::unique_ptr<Expr> iterable, std::unique_ptr<Expr> body)
         : varName(varName), iterable(std::move(iterable)), body(std::move(body)) {}
 
     const std::string& For::GetVarName() const {
         return varName;
     }
 
-    ASTnode* For::GetIterable() const {
+    Expr* For::GetIterable() const {
         return iterable.get();
     }
 
-    ASTnode* For::GetBody() const {
+    Expr* For::GetBody() const {
         return body.get();
     }
 

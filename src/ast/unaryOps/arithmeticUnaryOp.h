@@ -6,14 +6,14 @@
 
 namespace Hulk {
 
-    enum class ArithUnaryType { Minus, Sin, Cos, Sqrt };
+    enum class ArithUnaryType { Minus };
 
     class ArithmeticUnaryOp : public UnaryOp {
     private:
         ArithUnaryType type;
 
     public:
-        ArithmeticUnaryOp(ArithUnaryType opType, std::unique_ptr<ASTnode> arg);
+        ArithmeticUnaryOp(ArithUnaryType opType, std::unique_ptr<Expr> arg);
 
         ArithUnaryType GetType() const { return type; }
 

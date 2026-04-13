@@ -1,21 +1,21 @@
 #ifndef IS_EXPR_H
 #define IS_EXPR_H
 
-#include "../abs_nodes/ast.h"
+#include "../abs_nodes/expr.h"
 #include <memory>
 #include <string>
 
 namespace Hulk {
 
-    class IsExpr : public ASTnode {
+    class IsExpr : public Expr {
     private:
-        std::unique_ptr<ASTnode> expr;
+        std::unique_ptr<Expr> expr;
         std::string typeName;
 
     public:
-        IsExpr(std::unique_ptr<ASTnode> expr, const std::string& typeName);
+        IsExpr(std::unique_ptr<Expr> expr, const std::string& typeName);
 
-        ASTnode* GetExpr() const;
+        Expr* GetExpr() const;
         const std::string& GetTypeName() const;
 
         std::string ToString() const override;

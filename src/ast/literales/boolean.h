@@ -1,11 +1,11 @@
 ﻿#ifndef BOOLEAN_NODE_H
 #define BOOLEAN_NODE_H
 
-#include "../abs_nodes/ast.h"
+#include "../abs_nodes/expr.h"
 
 namespace Hulk {
 
-    class Boolean : public ASTnode {
+    class Boolean : public Expr {
     private:
         bool value;
 

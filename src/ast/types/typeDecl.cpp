@@ -19,7 +19,7 @@ namespace Hulk {
     TypeDecl::TypeDecl(const std::string& name,
                        std::vector<Param> ctorParams,
                        const std::string& parentName,
-                       std::vector<std::unique_ptr<ASTnode>> parentArgs,
+                       std::vector<std::unique_ptr<Expr>> parentArgs,
                        std::vector<TypeMember> members)
         : name(name), ctorParams(std::move(ctorParams)), parentName(parentName),
           parentArgs(std::move(parentArgs)), members(std::move(members)) {}
@@ -29,7 +29,7 @@ namespace Hulk {
     bool TypeDecl::HasCtorParams() const { return !ctorParams.empty(); }
     const std::string& TypeDecl::GetParentName() const { return parentName; }
     bool TypeDecl::HasParent() const { return !parentName.empty(); }
-    const std::vector<std::unique_ptr<ASTnode>>& TypeDecl::GetParentArgs() const { return parentArgs; }
+    const std::vector<std::unique_ptr<Expr>>& TypeDecl::GetParentArgs() const { return parentArgs; }
     const std::vector<TypeMember>& TypeDecl::GetMembers() const { return members; }
 
     std::string TypeDecl::ToString() const {

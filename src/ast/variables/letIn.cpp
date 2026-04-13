@@ -3,14 +3,14 @@
 namespace Hulk {
 
     LetIn::LetIn(std::vector<std::unique_ptr<VariableBinding>> bindings,
-                 std::unique_ptr<ASTnode> body)
+                 std::unique_ptr<Expr> body)
         : bindings(std::move(bindings)), body(std::move(body)) {}
 
     const std::vector<std::unique_ptr<VariableBinding>>& LetIn::GetBindings() const {
         return bindings;
     }
 
-    ASTnode* LetIn::GetBody() const { return body.get(); }
+    Expr* LetIn::GetBody() const { return body.get(); }
 
     std::string LetIn::ToString() const {
         std::string result = "let ";

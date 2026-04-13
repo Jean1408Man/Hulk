@@ -2,10 +2,10 @@
 
 namespace Hulk {
 
-    VectorLiteral::VectorLiteral(std::vector<std::unique_ptr<ASTnode>> elements)
+    VectorLiteral::VectorLiteral(std::vector<std::unique_ptr<Expr>> elements)
         : elements(std::move(elements)) {}
 
-    const std::vector<std::unique_ptr<ASTnode>>& VectorLiteral::GetElements() const {
+    const std::vector<std::unique_ptr<Expr>>& VectorLiteral::GetElements() const {
         return elements;
     }
 

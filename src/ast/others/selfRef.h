@@ -1,11 +1,11 @@
 #ifndef SELF_REF_H
 #define SELF_REF_H
 
-#include "../abs_nodes/ast.h"
+#include "../abs_nodes/expr.h"
 
 namespace Hulk {
 
-    class SelfRef : public ASTnode {
+    class SelfRef : public Expr {
     public:
         SelfRef() = default;
 

@@ -2,14 +2,14 @@
 
 namespace Hulk {
 
-    DestructiveAssignMember::DestructiveAssignMember(std::unique_ptr<ASTnode> object,
+    DestructiveAssignMember::DestructiveAssignMember(std::unique_ptr<Expr> object,
                                                      const std::string& memberName,
-                                                     std::unique_ptr<ASTnode> value)
+                                                     std::unique_ptr<Expr> value)
         : object(std::move(object)), memberName(memberName), value(std::move(value)) {}
 
-    ASTnode* DestructiveAssignMember::GetObject() const { return object.get(); }
+    Expr* DestructiveAssignMember::GetObject() const { return object.get(); }
     const std::string& DestructiveAssignMember::GetMemberName() const { return memberName; }
-    ASTnode* DestructiveAssignMember::GetValue() const { return value.get(); }
+    Expr* DestructiveAssignMember::GetValue() const { return value.get(); }
 
     std::string DestructiveAssignMember::ToString() const {
         return object->ToString() + "." + memberName + " := " + value->ToString();

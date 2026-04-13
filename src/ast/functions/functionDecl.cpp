@@ -4,20 +4,20 @@ namespace Hulk {
 
     FunctionDecl::FunctionDecl(const std::string& name,
                                std::vector<Param> params,
-                               std::unique_ptr<ASTnode> body)
+                               std::unique_ptr<Expr> body)
         : name(name), params(std::move(params)), returnTypeAnnotation(""), body(std::move(body)) {}
 
     FunctionDecl::FunctionDecl(const std::string& name,
                                std::vector<Param> params,
                                const std::string& returnTypeAnnotation,
-                               std::unique_ptr<ASTnode> body)
+                               std::unique_ptr<Expr> body)
         : name(name), params(std::move(params)), returnTypeAnnotation(returnTypeAnnotation), body(std::move(body)) {}
 
     const std::string& FunctionDecl::GetName() const { return name; }
     const std::vector<Param>& FunctionDecl::GetParams() const { return params; }
     const std::string& FunctionDecl::GetReturnTypeAnnotation() const { return returnTypeAnnotation; }
     bool FunctionDecl::HasReturnTypeAnnotation() const { return !returnTypeAnnotation.empty(); }
-    ASTnode* FunctionDecl::GetBody() const { return body.get(); }
+    Expr* FunctionDecl::GetBody() const { return body.get(); }
 
     std::string FunctionDecl::ToString() const {
         std::string result = "function " + name + "(";

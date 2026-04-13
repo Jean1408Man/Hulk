@@ -1,22 +1,22 @@
 #ifndef VECTOR_INDEX_H
 #define VECTOR_INDEX_H
 
-#include "../abs_nodes/ast.h"
+#include "../abs_nodes/expr.h"
 #include <memory>
 
 namespace Hulk {
 
-    class VectorIndex : public ASTnode {
+    class VectorIndex : public Expr {
     private:
-        std::unique_ptr<ASTnode> vector;
-        std::unique_ptr<ASTnode> index;
+        std::unique_ptr<Expr> vector;
+        std::unique_ptr<Expr> index;
 
     public:
-        VectorIndex(std::unique_ptr<ASTnode> vector,
-                    std::unique_ptr<ASTnode> index);
+        VectorIndex(std::unique_ptr<Expr> vector,
+                    std::unique_ptr<Expr> index);
 
-        ASTnode* GetVector() const;
-        ASTnode* GetIndex() const;
+        Expr* GetVector() const;
+        Expr* GetIndex() const;
 
         std::string ToString() const override;
     };

@@ -2,12 +2,12 @@
 
 namespace Hulk {
 
-    ExprBlock::ExprBlock(std::vector<std::unique_ptr<ASTnode>> exprs)
+    ExprBlock::ExprBlock(std::vector<std::unique_ptr<Expr>> exprs)
         : exprs(std::move(exprs)) {}
 
-    const std::vector<std::unique_ptr<ASTnode>>& ExprBlock::GetExprs() const { return exprs; }
+    const std::vector<std::unique_ptr<Expr>>& ExprBlock::GetExprs() const { return exprs; }
 
-    ASTnode* ExprBlock::GetLast() const {
+    Expr* ExprBlock::GetLast() const {
         if (exprs.empty()) return nullptr;
         return exprs.back().get();
     }

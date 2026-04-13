@@ -2,10 +2,10 @@
 
 namespace Hulk {
 
-    BaseCall::BaseCall(std::vector<std::unique_ptr<ASTnode>> args)
+    BaseCall::BaseCall(std::vector<std::unique_ptr<Expr>> args)
         : args(std::move(args)) {}
 
-    const std::vector<std::unique_ptr<ASTnode>>& BaseCall::GetArgs() const { return args; }
+    const std::vector<std::unique_ptr<Expr>>& BaseCall::GetArgs() const { return args; }
 
     std::string BaseCall::ToString() const {
         std::string result = "base(";

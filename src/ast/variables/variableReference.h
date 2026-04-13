@@ -1,12 +1,12 @@
 #ifndef VARIABLE_REFERENCE_H
 #define VARIABLE_REFERENCE_H
 
-#include "../abs_nodes/ast.h"
+#include "../abs_nodes/expr.h"
 #include <string>
 
 namespace Hulk {
 
-    class VariableReference : public ASTnode {
+    class VariableReference : public Expr {
     private:
         std::string name;
 

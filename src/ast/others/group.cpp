@@ -3,10 +3,10 @@
 
 namespace Hulk {
 
-    Group::Group(std::unique_ptr<ASTnode> expression) 
+    Group::Group(std::unique_ptr<Expr> expression) 
         : expr(std::move(expression)) {}
 
-    ASTnode* Group::GetExpr() const {
+    Expr* Group::GetExpr() const {
         return expr.get();
     }
 

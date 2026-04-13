@@ -1,7 +1,7 @@
 #ifndef BUILTIN_CALL_H
 #define BUILTIN_CALL_H
 
-#include "../abs_nodes/ast.h"
+#include "../abs_nodes/expr.h"
 #include <memory>
 #include <string>
 #include <vector>
@@ -15,17 +15,17 @@ namespace Hulk {
         Range
     };
 
-    class BuiltinCall : public ASTnode {
+    class BuiltinCall : public Expr {
     private:
         BuiltinFunc func;
-        std::vector<std::unique_ptr<ASTnode>> args;
+        std::vector<std::unique_ptr<Expr>> args;
 
     public:
         BuiltinCall(BuiltinFunc func,
-                    std::vector<std::unique_ptr<ASTnode>> args);
+                    std::vector<std::unique_ptr<Expr>> args);
 
         BuiltinFunc GetFunc() const;
-        const std::vector<std::unique_ptr<ASTnode>>& GetArgs() const;
+        const std::vector<std::unique_ptr<Expr>>& GetArgs() const;
 
         std::string ToString() const override;
     };

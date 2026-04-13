@@ -3,10 +3,10 @@
 
 namespace Hulk {
 
-    Print::Print(std::unique_ptr<ASTnode> expression) 
+    Print::Print(std::unique_ptr<Expr> expression) 
         : expr(std::move(expression)) {}
 
-    ASTnode* Print::GetExpr() const {
+    Expr* Print::GetExpr() const {
         return expr.get();
     }
 
