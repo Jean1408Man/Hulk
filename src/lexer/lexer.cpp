@@ -24,8 +24,8 @@ bool is_whitespace(char c) {
 
 }
 
-Lexer::Lexer(std::string source)
-    : cursor_(std::move(source)) {}
+Lexer::Lexer(std::string source, hulk::common::DiagnosticEngine& engine)
+    : cursor_(std::move(source)), engine_(engine) {}
 
 Token Lexer::next_token() {
     skip_whitespace_and_comments();
@@ -149,7 +149,7 @@ Token Lexer::scan_string() {
 
             if (cursor_.eof()) {
                 const hulk::common::Position end = cursor_.position();
-                return error_token("escape incompleto en string", start, end, lexeme);
+                return error_token("INCOMPLETE_ESCAPE", start, end, lexeme);
             }
 
             lexeme += cursor_.advance();
@@ -164,14 +164,14 @@ Token Lexer::scan_string() {
 
         if (c == '\n') {
             const hulk::common::Position end = cursor_.position();
-            return error_token("string sin cerrar antes de fin de línea", start, end, lexeme);
+            return error_token("UNTERMINATED_STRING_EOL", start, end, lexeme);
         }
 
         lexeme += cursor_.advance();
     }
 
     const hulk::common::Position end = cursor_.position();
-    return error_token("string sin cerrar antes de fin de archivo", start, end, lexeme);
+    return error_token("UNTERMINATED_STRING_EOF", start, end, lexeme);
 }
 
 Token Lexer::scan_operator_or_delimiter() {
@@ -228,7 +228,7 @@ Token Lexer::scan_operator_or_delimiter() {
         case '.': return make_token(TokenKind::Dot, ".", start, end);
 
         default:
-            return error_token("carácter inválido", start, end, std::string(1, c));
+            return error_token("INVALID_CHAR", start, end, std::string(1, c));
     }
 }
 
@@ -246,26 +246,22 @@ Token Lexer::make_token(TokenKind kind,
     };
 }
 
-Token Lexer::error_token(const std::string& message,
+Token Lexer::error_token(const std::string& error_id,
                          hulk::common::Position start,
                          hulk::common::Position end,
                          const std::string& lexeme) {
-    diagnostics_.push_back(hulk::common::Diagnostic {
-        .level = hulk::common::DiagnosticLevel::Error,
-        .message = message,
-        .span = hulk::common::Span {
-            .start = start,
-            .end = end,
-        },
-    });
+    const hulk::common::Span span { .start = start, .end = end };
+
+    engine_.report(error_id,
+                   hulk::common::DiagnosticLevel::Lexical,
+                   hulk::common::Severity::Error,
+                   span,
+                   lexeme);
 
     return Token {
-        .kind = TokenKind::Error,
+        .kind   = TokenKind::Error,
         .lexeme = lexeme,
-        .span = hulk::common::Span {
-            .start = start,
-            .end = end,
-        },
+        .span   = span,
     };
 }
 

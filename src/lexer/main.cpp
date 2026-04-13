@@ -5,9 +5,13 @@
 
 #include "lexer.hpp"
 #include "token_kind.hpp"
+#include "../common/diagnosticRepository.hpp"
+#include "../common/diagnosticEngine.hpp"
 
 using hulk::lexer::Lexer;
 using hulk::lexer::TokenKind;
+using hulk::common::DiagnosticRepository;
+using hulk::common::DiagnosticEngine;
 
 namespace {
 
@@ -111,32 +115,33 @@ int main(int argc, char** argv) {
     }
 
     try {
-        const std::string source = read_file(argv[1]);
+        // 1. Cargar el repositorio de mensajes
+        DiagnosticRepository repo;
+        if (!repo.load("lib/es_errors.json")) {
+            std::cerr << "Advertencia: no se pudo cargar lib/es_errors.json. "
+                         "Los mensajes de error serán genéricos.\n";
+        }
 
-        Lexer lexer(source);
+        // 2. Crear el engine (único punto de acumulación de errores)
+        DiagnosticEngine engine(repo);
+
+        // 3. Ejecutar el lexer
+        const std::string source = read_file(argv[1]);
+        Lexer lexer(source, engine);
         const auto tokens = lexer.tokenize();
-        
+
         std::cout << "=== TOKENS ===\n";
         for (const auto& token : tokens) {
             print_token(token);
         }
 
-        const auto& diagnostics = lexer.diagnostics();
-        if (!diagnostics.empty()) {
-            std::cout << "\n=== DIAGNOSTICS ===\n";
-            for (const auto& diag : diagnostics) {
-                std::cout
-                    << "Error"
-                    << " | " << diag.message
-                    << " | span: ["
-                    << diag.span.start.line << ":" << diag.span.start.column
-                    << " - "
-                    << diag.span.end.line << ":" << diag.span.end.column
-                    << "]\n";
-            }
+        // 4. Reportar todos los diagnósticos acumulados
+        if (!engine.diagnostics().empty()) {
+            std::cerr << "\n=== DIAGNOSTICS ===\n";
+            engine.print_all();
         }
 
-        return diagnostics.empty() ? 0 : 2;
+        return engine.has_errors() ? 2 : 0;
     } catch (const std::exception& ex) {
         std::cerr << "Fallo: " << ex.what() << "\n";
         return 1;

@@ -1,0 +1,9 @@
+{
+  "UNEXPECTED_TOKEN":       "Se esperaba '{}', pero se encontró '{}'.",
+  "UNDECLARED_VAR":         "La variable '{}' no ha sido declarada en este ámbito.",
+
+  "INVALID_CHAR":           "Carácter inválido: '{}'.",
+  "UNTERMINATED_STRING_EOL":"String sin cerrar: se encontró un salto de línea antes del cierre '\"'.",
+  "UNTERMINATED_STRING_EOF":"String sin cerrar: se llegó al fin del archivo sin encontrar '\"'.",
+  "INCOMPLETE_ESCAPE":      "Secuencia de escape incompleta: se llegó al fin del archivo después de '\\'."
+}
