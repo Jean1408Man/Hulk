@@ -12,7 +12,7 @@ namespace Hulk {
         LogicOp op;
 
     public:
-        LogicBinOp(std::unique_ptr<ASTnode> left, LogicOp operation, std::unique_ptr<ASTnode> right);
+        LogicBinOp(std::unique_ptr<Expr> left, LogicOp operation, std::unique_ptr<Expr> right);
 
         LogicOp GetOperator() const { return op; }
 

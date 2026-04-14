@@ -2,7 +2,7 @@
 
 namespace Hulk {
 
-    ArithmeticBinOp::ArithmeticBinOp(std::unique_ptr<ASTnode> left, ArithmeticOp operation, std::unique_ptr<ASTnode> right)
+    ArithmeticBinOp::ArithmeticBinOp(std::unique_ptr<Expr> left, ArithmeticOp operation, std::unique_ptr<Expr> right)
         : BinOp(std::move(left), std::move(right)), op(operation) {}
 
     std::string ArithmeticBinOp::ToString() const {

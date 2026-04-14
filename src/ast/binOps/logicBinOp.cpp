@@ -2,7 +2,7 @@
 
 namespace Hulk {
 
-    LogicBinOp::LogicBinOp(std::unique_ptr<ASTnode> left, LogicOp operation, std::unique_ptr<ASTnode> right)
+    LogicBinOp::LogicBinOp(std::unique_ptr<Expr> left, LogicOp operation, std::unique_ptr<Expr> right)
         : BinOp(std::move(left), std::move(right)), op(operation) {}
 
     std::string LogicBinOp::ToString() const {

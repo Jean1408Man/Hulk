@@ -12,7 +12,7 @@ namespace Hulk {
         StringOp op;
 
     public:
-        StringBinOp(std::unique_ptr<ASTnode> left, StringOp operation, std::unique_ptr<ASTnode> right);
+        StringBinOp(std::unique_ptr<Expr> left, StringOp operation, std::unique_ptr<Expr> right);
 
         StringOp GetOperator() const;
 

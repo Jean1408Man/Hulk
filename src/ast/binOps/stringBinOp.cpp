@@ -2,7 +2,7 @@
 
 namespace Hulk {
 
-    StringBinOp::StringBinOp(std::unique_ptr<ASTnode> left, StringOp operation, std::unique_ptr<ASTnode> right)
+    StringBinOp::StringBinOp(std::unique_ptr<Expr> left, StringOp operation, std::unique_ptr<Expr> right)
         : BinOp(std::move(left), std::move(right)), op(operation) {}
 
     StringOp StringBinOp::GetOperator() const {

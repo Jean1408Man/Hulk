@@ -1,0 +1,221 @@
+program
+    ::= decl* expr opt_semi
+
+opt_semi
+    ::= ";"
+     |  ε
+
+
+decl
+    ::= function_decl
+     |  type_decl
+
+
+function_decl
+    ::= "function" IDENT "(" params_opt ")" return_ann_opt "=>" expr ";"
+     |  "function" IDENT "(" params_opt ")" return_ann_opt block
+
+
+type_decl
+    ::= "type" IDENT ctor_params_opt inherits_opt "{" type_member* "}"
+
+
+ctor_params_opt
+    ::= "(" params_opt ")"
+     |  ε
+
+
+inherits_opt
+    ::= "inherits" IDENT parent_args_opt
+     |  ε
+
+
+parent_args_opt
+    ::= "(" args_opt ")"
+     |  ε
+
+
+type_member
+    ::= attr_decl
+     |  method_decl
+
+
+attr_decl
+    ::= IDENT type_ann_opt "=" expr ";"
+
+
+method_decl
+    ::= IDENT "(" params_opt ")" return_ann_opt "=>" expr ";"
+     |  IDENT "(" params_opt ")" return_ann_opt block
+
+
+params_opt
+    ::= param_list
+     |  ε
+
+
+param_list
+    ::= param ("," param)*
+
+
+param
+    ::= IDENT type_ann_opt
+
+
+return_ann_opt
+    ::= ":" type_expr
+     |  ε
+
+
+type_ann_opt
+    ::= ":" type_expr
+     |  ε
+
+
+type_expr
+    ::= IDENT
+
+
+expr
+    ::= let_expr
+     |  if_expr
+     |  while_expr
+     |  for_expr
+     |  assign_expr
+
+
+let_expr
+    ::= "let" binding_list "in" expr
+
+
+binding_list
+    ::= binding ("," binding)*
+
+
+binding
+    ::= IDENT type_ann_opt "=" expr
+
+
+if_expr
+    ::= "if" "(" expr ")" expr elif_clause* "else" expr
+
+
+elif_clause
+    ::= "elif" "(" expr ")" expr
+
+
+while_expr
+    ::= "while" "(" expr ")" expr
+
+
+for_expr
+    ::= "for" "(" IDENT "in" expr ")" expr
+
+
+assign_expr
+    ::= lvalue ":=" expr
+     |  logic_or
+
+
+lvalue
+    ::= IDENT
+     |  postfix "." IDENT
+
+
+logic_or
+    ::= logic_or "|" logic_and
+     |  logic_and
+
+
+logic_and
+    ::= logic_and "&" equality
+     |  equality
+
+
+equality
+    ::= equality "==" relation
+     |  equality "!=" relation
+     |  relation
+
+
+relation
+    ::= relation "<"  type_test_expr
+     |  relation ">"  type_test_expr
+     |  relation "<=" type_test_expr
+     |  relation ">=" type_test_expr
+     |  type_test_expr
+
+
+type_test_expr
+    ::= concat
+     |  concat "is" type_expr
+     |  concat "as" type_expr
+
+
+concat
+    ::= concat "@"  additive
+     |  concat "@@" additive
+     |  additive
+
+
+additive
+    ::= additive "+" multiplicative
+     |  additive "-" multiplicative
+     |  multiplicative
+
+
+multiplicative
+    ::= multiplicative "*" power
+     |  multiplicative "/" power
+     |  multiplicative "%" power
+     |  power
+
+
+power
+    ::= unary "^" power
+     |  unary
+
+
+unary
+    ::= "!" unary
+     |  "-" unary
+     |  postfix
+
+
+postfix
+    ::= primary
+     |  postfix "(" args_opt ")"
+     |  postfix "." IDENT
+
+
+primary
+    ::= literal
+     |  IDENT
+     |  "new" IDENT "(" args_opt ")"
+     |  "(" expr ")"
+     |  block
+
+
+args_opt
+    ::= arg_list
+     |  ε
+
+
+arg_list
+    ::= expr ("," expr)*
+
+
+block
+    ::= "{" block_body_opt "}"
+
+
+block_body_opt
+    ::= expr (";" expr)* ";"?
+     |  ε
+
+
+literal
+    ::= NUMBER
+     |  STRING
+     |  "true"
+     |  "false"

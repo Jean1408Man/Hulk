@@ -9,7 +9,7 @@ namespace Hulk {
     class LogicUnaryOp : public UnaryOp {
     public:
         // Constructor: usamos 'explicit' por buena práctica
-        explicit LogicUnaryOp(std::unique_ptr<ASTnode> arg);
+        explicit LogicUnaryOp(std::unique_ptr<Expr> arg);
 
         virtual ~LogicUnaryOp() = default;
 

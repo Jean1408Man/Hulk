@@ -12,7 +12,7 @@ namespace Hulk {
         ArithmeticOp op;
 
     public:
-        ArithmeticBinOp(std::unique_ptr<ASTnode> left, ArithmeticOp operation, std::unique_ptr<ASTnode> right);
+        ArithmeticBinOp(std::unique_ptr<Expr> left, ArithmeticOp operation, std::unique_ptr<Expr> right);
 
         ArithmeticOp GetOperator() const { return op; }
         
