@@ -10,13 +10,29 @@ LEXER_AST_SRCS := \
 	src/ast/variables/variableBinding.cpp \
 	src/ast/variables/letIn.cpp \
 	src/ast/assignments/desctructiveAssign.cpp \
+	src/ast/assignments/destructiveAssignMember.cpp \
 	src/ast/binOps/arithmeticBinOp.cpp \
 	src/ast/binOps/logicBinOp.cpp \
 	src/ast/binOps/stringBinOp.cpp \
+	src/ast/conditionals/ifStmt.cpp \
 	src/ast/unaryOps/arithmeticUnaryOp.cpp \
 	src/ast/unaryOps/logicUnaryOp.cpp \
 	src/ast/domainFunctions/print.cpp \
-	src/ast/domainFunctions/builtinCall.cpp
+	src/ast/domainFunctions/builtinCall.cpp \
+	src/ast/functions/functionCall.cpp \
+	src/ast/functions/functionDecl.cpp \
+	src/ast/loops/for.cpp \
+	src/ast/loops/while.cpp \
+	src/ast/others/exprBlock.cpp \
+	src/ast/others/program.cpp \
+	src/ast/types/asExpr.cpp \
+	src/ast/types/isExpr.cpp \
+	src/ast/types/memberAccess.cpp \
+	src/ast/types/methodCall.cpp \
+	src/ast/types/newExpr.cpp \
+	src/ast/types/typeDecl.cpp \
+	src/ast/types/typeMemberAttribute.cpp \
+	src/ast/types/typeMemberMethod.cpp
 
 PARSER_SRCS := \
 	src/parser/parser.cpp \

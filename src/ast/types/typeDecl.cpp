@@ -4,17 +4,17 @@ namespace Hulk {
 
     TypeDecl::TypeDecl(const std::string& name,
                        std::vector<TypeMember> members)
-        : name(name), ctorParams({}), parentName(""), parentArgs({}), members(std::move(members)) {}
+        : name(name), ctorParams(), parentName(""), parentArgs(), members(std::move(members)) {}
 
     TypeDecl::TypeDecl(const std::string& name,
                        std::vector<Param> ctorParams,
                        std::vector<TypeMember> members)
-        : name(name), ctorParams(std::move(ctorParams)), parentName(""), parentArgs({}), members(std::move(members)) {}
+        : name(name), ctorParams(std::move(ctorParams)), parentName(""), parentArgs(), members(std::move(members)) {}
 
     TypeDecl::TypeDecl(const std::string& name,
                        const std::string& parentName,
                        std::vector<TypeMember> members)
-        : name(name), ctorParams({}), parentName(parentName), parentArgs({}), members(std::move(members)) {}
+        : name(name), ctorParams(), parentName(parentName), parentArgs(), members(std::move(members)) {}
 
     TypeDecl::TypeDecl(const std::string& name,
                        std::vector<Param> ctorParams,

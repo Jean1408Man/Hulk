@@ -12,6 +12,7 @@ namespace Hulk {
             case ArithmeticOp::Minus: s = "-"; break;
             case ArithmeticOp::Mult: s = "*"; break;
             case ArithmeticOp::Div: s = "/"; break;
+            case ArithmeticOp::Mod: s = "%"; break;
             case ArithmeticOp::Pow: s = "^"; break;
         }
         return "(" + left->ToString() + " " + s + " " + right->ToString() + ")";

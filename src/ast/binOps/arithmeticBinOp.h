@@ -5,7 +5,7 @@
 
 namespace Hulk {
 
-    enum class ArithmeticOp { Plus, Minus, Mult, Div, Pow };
+    enum class ArithmeticOp { Plus, Minus, Mult, Div, Mod, Pow };
 
     class ArithmeticBinOp : public BinOp {
     private:

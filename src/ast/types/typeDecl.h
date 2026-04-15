@@ -17,6 +17,9 @@ namespace Hulk {
         Kind kind;
         std::unique_ptr<Decl> node;
 
+        TypeMember()
+            : kind(Kind::Attribute), node(nullptr) {}
+
         TypeMember(Kind kind, std::unique_ptr<Decl> node)
             : kind(kind), node(std::move(node)) {}
     };

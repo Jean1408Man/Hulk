@@ -8,6 +8,8 @@ namespace Hulk {
 
     Expr* MemberAccess::GetObject() const { return object.get(); }
     const std::string& MemberAccess::GetMemberName() const { return memberName; }
+    std::unique_ptr<Expr> MemberAccess::TakeObject() { return std::move(object); }
+    std::string MemberAccess::TakeMemberName() { return std::move(memberName); }
 
     std::string MemberAccess::ToString() const {
         return object->ToString() + "." + memberName;

@@ -9,6 +9,9 @@ namespace Hulk {
         std::string name;
         std::string typeAnnotation;
 
+        Param()
+            : name(""), typeAnnotation("") {}
+
         explicit Param(const std::string& name)
             : name(name), typeAnnotation("") {}
 

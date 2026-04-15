@@ -18,6 +18,8 @@ namespace Hulk {
 
         Expr* GetObject() const;
         const std::string& GetMemberName() const;
+        std::unique_ptr<Expr> TakeObject();
+        std::string TakeMemberName();
 
         std::string ToString() const override;
     };

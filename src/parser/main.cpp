@@ -5,14 +5,30 @@
 #include <vector>
 
 #include "../ast/assignments/desctructiveAssign.h"
+#include "../ast/assignments/destructiveAssignMember.h"
 #include "../ast/binOps/arithmeticBinOp.h"
 #include "../ast/binOps/logicBinOp.h"
 #include "../ast/binOps/stringBinOp.h"
+#include "../ast/conditionals/ifStmt.h"
 #include "../ast/domainFunctions/builtinCall.h"
 #include "../ast/domainFunctions/print.h"
+#include "../ast/functions/functionCall.h"
+#include "../ast/functions/functionDecl.h"
 #include "../ast/literales/boolean.h"
 #include "../ast/literales/number.h"
 #include "../ast/literales/string.h"
+#include "../ast/loops/for.h"
+#include "../ast/loops/while.h"
+#include "../ast/others/exprBlock.h"
+#include "../ast/others/program.h"
+#include "../ast/types/asExpr.h"
+#include "../ast/types/isExpr.h"
+#include "../ast/types/memberAccess.h"
+#include "../ast/types/methodCall.h"
+#include "../ast/types/newExpr.h"
+#include "../ast/types/typeDecl.h"
+#include "../ast/types/typeMemberAttribute.h"
+#include "../ast/types/typeMemberMethod.h"
 #include "../ast/unaryOps/arithmeticUnaryOp.h"
 #include "../ast/unaryOps/logicUnaryOp.h"
 #include "../ast/variables/letIn.h"
@@ -47,6 +63,7 @@ const char* arithmetic_op_name(Hulk::ArithmeticOp op) {
         case Hulk::ArithmeticOp::Minus: return "Minus";
         case Hulk::ArithmeticOp::Mult: return "Mult";
         case Hulk::ArithmeticOp::Div: return "Div";
+        case Hulk::ArithmeticOp::Mod: return "Mod";
         case Hulk::ArithmeticOp::Pow: return "Pow";
     }
     return "UnknownArithmeticOp";
@@ -144,6 +161,15 @@ void dump_expr(const Hulk::Expr* expr, int depth = 0) {
         return;
     }
 
+    if (const auto* node = dynamic_cast<const Hulk::DestructiveAssignMember*>(expr)) {
+        std::cout << indent(depth) << "DestructiveAssignMember(member=" << node->GetMemberName() << ")\n";
+        std::cout << indent(depth + 1) << "object\n";
+        dump_expr(node->GetObject(), depth + 2);
+        std::cout << indent(depth + 1) << "value\n";
+        dump_expr(node->GetValue(), depth + 2);
+        return;
+    }
+
     if (const auto* node = dynamic_cast<const Hulk::ArithmeticBinOp*>(expr)) {
         std::cout << indent(depth) << "ArithmeticBinOp(op=" << arithmetic_op_name(node->GetOperator()) << ")\n";
         dump_expr(node->GetLeft(), depth + 1);
@@ -191,8 +217,220 @@ void dump_expr(const Hulk::Expr* expr, int depth = 0) {
         return;
     }
 
+    if (const auto* node = dynamic_cast<const Hulk::ExprBlock*>(expr)) {
+        std::cout << indent(depth) << "ExprBlock\n";
+        for (const auto& child : node->GetExprs()) {
+            dump_expr(child.get(), depth + 1);
+        }
+        return;
+    }
+
+    if (const auto* node = dynamic_cast<const Hulk::IfStmt*>(expr)) {
+        std::cout << indent(depth) << "IfStmt\n";
+        std::cout << indent(depth + 1) << "condition\n";
+        dump_expr(node->GetCondition(), depth + 2);
+        std::cout << indent(depth + 1) << "then\n";
+        dump_expr(node->GetThenBranch(), depth + 2);
+        for (const auto& branch : node->GetElifBranches()) {
+            std::cout << indent(depth + 1) << "elif\n";
+            std::cout << indent(depth + 2) << "condition\n";
+            dump_expr(branch.condition.get(), depth + 3);
+            std::cout << indent(depth + 2) << "body\n";
+            dump_expr(branch.body.get(), depth + 3);
+        }
+        std::cout << indent(depth + 1) << "else\n";
+        dump_expr(node->GetElseBranch(), depth + 2);
+        return;
+    }
+
+    if (const auto* node = dynamic_cast<const Hulk::WhileStmt*>(expr)) {
+        std::cout << indent(depth) << "WhileStmt\n";
+        std::cout << indent(depth + 1) << "condition\n";
+        dump_expr(node->GetCondition(), depth + 2);
+        std::cout << indent(depth + 1) << "body\n";
+        dump_expr(node->GetBody(), depth + 2);
+        return;
+    }
+
+    if (const auto* node = dynamic_cast<const Hulk::For*>(expr)) {
+        std::cout << indent(depth) << "For(var=" << node->GetVarName() << ")\n";
+        std::cout << indent(depth + 1) << "iterable\n";
+        dump_expr(node->GetIterable(), depth + 2);
+        std::cout << indent(depth + 1) << "body\n";
+        dump_expr(node->GetBody(), depth + 2);
+        return;
+    }
+
+    if (const auto* node = dynamic_cast<const Hulk::FunctionCall*>(expr)) {
+        std::cout << indent(depth) << "FunctionCall(name=" << node->GetName() << ")\n";
+        for (const auto& arg : node->GetArgs()) {
+            dump_expr(arg.get(), depth + 1);
+        }
+        return;
+    }
+
+    if (const auto* node = dynamic_cast<const Hulk::MethodCall*>(expr)) {
+        std::cout << indent(depth) << "MethodCall(name=" << node->GetMethodName() << ")\n";
+        std::cout << indent(depth + 1) << "object\n";
+        dump_expr(node->GetObject(), depth + 2);
+        std::cout << indent(depth + 1) << "args\n";
+        for (const auto& arg : node->GetArgs()) {
+            dump_expr(arg.get(), depth + 2);
+        }
+        return;
+    }
+
+    if (const auto* node = dynamic_cast<const Hulk::MemberAccess*>(expr)) {
+        std::cout << indent(depth) << "MemberAccess(name=" << node->GetMemberName() << ")\n";
+        dump_expr(node->GetObject(), depth + 1);
+        return;
+    }
+
+    if (const auto* node = dynamic_cast<const Hulk::NewExpr*>(expr)) {
+        std::cout << indent(depth) << "NewExpr(type=" << node->GetTypeName() << ")\n";
+        for (const auto& arg : node->GetArgs()) {
+            dump_expr(arg.get(), depth + 1);
+        }
+        return;
+    }
+
+    if (const auto* node = dynamic_cast<const Hulk::IsExpr*>(expr)) {
+        std::cout << indent(depth) << "IsExpr(type=" << node->GetTypeName() << ")\n";
+        dump_expr(node->GetExpr(), depth + 1);
+        return;
+    }
+
+    if (const auto* node = dynamic_cast<const Hulk::AsExpr*>(expr)) {
+        std::cout << indent(depth) << "AsExpr(type=" << node->GetTypeName() << ")\n";
+        dump_expr(node->GetExpr(), depth + 1);
+        return;
+    }
+
     std::cout << indent(depth) << "UnknownExpr\n";
     std::cout << indent(depth + 1) << expr->ToString() << "\n";
+}
+
+void dump_decl(const Hulk::Decl* decl, int depth = 0) {
+    if (decl == nullptr) {
+        std::cout << indent(depth) << "<null-decl>\n";
+        return;
+    }
+
+    if (const auto* node = dynamic_cast<const Hulk::FunctionDecl*>(decl)) {
+        std::cout << indent(depth) << "FunctionDecl(name=" << node->GetName() << ")\n";
+        if (!node->GetParams().empty()) {
+            std::cout << indent(depth + 1) << "params\n";
+            for (const auto& param : node->GetParams()) {
+                std::cout << indent(depth + 2) << "Param(name=" << param.name;
+                if (param.HasTypeAnnotation()) {
+                    std::cout << ", type=" << param.typeAnnotation;
+                }
+                std::cout << ")\n";
+            }
+        }
+        if (node->HasReturnTypeAnnotation()) {
+            std::cout << indent(depth + 1) << "return=" << node->GetReturnTypeAnnotation() << "\n";
+        }
+        std::cout << indent(depth + 1) << "body\n";
+        dump_expr(node->GetBody(), depth + 2);
+        return;
+    }
+
+    if (const auto* node = dynamic_cast<const Hulk::TypeMemberAttribute*>(decl)) {
+        std::cout << indent(depth) << "TypeMemberAttribute(name=" << node->GetName();
+        if (node->HasTypeAnnotation()) {
+            std::cout << ", type=" << node->GetTypeAnnotation();
+        }
+        std::cout << ")\n";
+        dump_expr(node->GetInitializer(), depth + 1);
+        return;
+    }
+
+    if (const auto* node = dynamic_cast<const Hulk::TypeMemberMethod*>(decl)) {
+        std::cout << indent(depth) << "TypeMemberMethod(name=" << node->GetName() << ")\n";
+        if (!node->GetParams().empty()) {
+            std::cout << indent(depth + 1) << "params\n";
+            for (const auto& param : node->GetParams()) {
+                std::cout << indent(depth + 2) << "Param(name=" << param.name;
+                if (param.HasTypeAnnotation()) {
+                    std::cout << ", type=" << param.typeAnnotation;
+                }
+                std::cout << ")\n";
+            }
+        }
+        if (node->HasReturnTypeAnnotation()) {
+            std::cout << indent(depth + 1) << "return=" << node->GetReturnTypeAnnotation() << "\n";
+        }
+        std::cout << indent(depth + 1) << "body\n";
+        dump_expr(node->GetBody(), depth + 2);
+        return;
+    }
+
+    if (const auto* node = dynamic_cast<const Hulk::TypeDecl*>(decl)) {
+        std::cout << indent(depth) << "TypeDecl(name=" << node->GetName() << ")\n";
+        if (node->HasCtorParams()) {
+            std::cout << indent(depth + 1) << "ctorParams\n";
+            for (const auto& param : node->GetCtorParams()) {
+                std::cout << indent(depth + 2) << "Param(name=" << param.name;
+                if (param.HasTypeAnnotation()) {
+                    std::cout << ", type=" << param.typeAnnotation;
+                }
+                std::cout << ")\n";
+            }
+        }
+        if (node->HasParent()) {
+            std::cout << indent(depth + 1) << "inherits=" << node->GetParentName() << "\n";
+            if (!node->GetParentArgs().empty()) {
+                std::cout << indent(depth + 1) << "parentArgs\n";
+                for (const auto& arg : node->GetParentArgs()) {
+                    dump_expr(arg.get(), depth + 2);
+                }
+            }
+        }
+        if (!node->GetMembers().empty()) {
+            std::cout << indent(depth + 1) << "members\n";
+            for (const auto& member : node->GetMembers()) {
+                dump_decl(member.node.get(), depth + 2);
+            }
+        }
+        return;
+    }
+
+    std::cout << indent(depth) << "UnknownDecl\n";
+    std::cout << indent(depth + 1) << decl->ToString() << "\n";
+}
+
+void dump_ast(const Hulk::ASTnode* node, int depth = 0) {
+    if (node == nullptr) {
+        std::cout << indent(depth) << "<null>\n";
+        return;
+    }
+
+    if (const auto* program = dynamic_cast<const Hulk::Program*>(node)) {
+        std::cout << indent(depth) << "Program\n";
+        if (!program->GetDeclarations().empty()) {
+            std::cout << indent(depth + 1) << "declarations\n";
+            for (const auto& decl : program->GetDeclarations()) {
+                dump_decl(decl.get(), depth + 2);
+            }
+        }
+        std::cout << indent(depth + 1) << "globalExpr\n";
+        dump_expr(program->GetGlobalExpr(), depth + 2);
+        return;
+    }
+
+    if (const auto* expr = dynamic_cast<const Hulk::Expr*>(node)) {
+        dump_expr(expr, depth);
+        return;
+    }
+
+    if (const auto* decl = dynamic_cast<const Hulk::Decl*>(node)) {
+        dump_decl(decl, depth);
+        return;
+    }
+
+    std::cout << indent(depth) << "UnknownAst\n";
+    std::cout << indent(depth + 1) << node->ToString() << "\n";
 }
 
 } // namespace
@@ -222,7 +460,7 @@ int main(int argc, char** argv) {
             std::cout << "=== AST ===\n";
             std::cout << driver.result()->ToString() << "\n";
             std::cout << "\n=== TREE ===\n";
-            dump_expr(dynamic_cast<Hulk::Expr*>(driver.result()));
+            dump_ast(driver.result());
         } else {
             std::cout << "=== AST ===\n";
             std::cout << "<sin resultado>\n";
