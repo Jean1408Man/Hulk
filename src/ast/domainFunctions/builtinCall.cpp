@@ -12,6 +12,9 @@ namespace Hulk {
     std::string BuiltinCall::ToString() const {
         std::string name;
         switch (func) {
+            case BuiltinFunc::Sqrt:  name = "sqrt";  break;
+            case BuiltinFunc::Sin:   name = "sin";   break;
+            case BuiltinFunc::Cos:   name = "cos";   break;
             case BuiltinFunc::Exp:   name = "exp";   break;
             case BuiltinFunc::Log:   name = "log";   break;
             case BuiltinFunc::Rand:  name = "rand";  break;

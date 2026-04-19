@@ -74,6 +74,11 @@
             std::string name;
             bool isMember = false;
         };
+
+        struct TopLevelItems {
+            DeclList decls;
+            ExprList exprs;
+        };
     }
 }
 
@@ -128,7 +133,6 @@
 %type <ExprPtr> expr let_expr if_expr while_expr for_expr assign_expr
 %type <ExprPtr> logic_or logic_and equality relation type_test_expr concat additive multiplicative power unary postfix primary block
 %type <DeclPtr> decl function_decl type_decl
-%type <DeclList> decl_list
 %type <BindingList> binding_list
 %type <BindingPtr> binding
 %type <ExprList> expr_list args_opt arg_list block_body_opt parent_args_opt
@@ -140,32 +144,67 @@
 %type <Hulk::TypeMember> type_member
 %type <TypeMemberList> type_member_list
 %type <hulk::parser::LValueTarget> lvalue
+%type <hulk::parser::TopLevelItems> top_level_items top_level_item
 
 %%
 
 program
-    : decl_list expr opt_semi
+    : top_level_items
       {
-          $$ = std::make_unique<Hulk::Program>(std::move($1), std::move($2));
+          if ($1.exprs.empty()) {
+              driver.report_syntax_error("el programa debe contener al menos una expresion global");
+              $$ = std::make_unique<Hulk::Program>(
+                  std::move($1.decls),
+                  std::make_unique<Hulk::ExprBlock>(ExprList {})
+              );
+          } else if ($1.exprs.size() == 1) {
+              $$ = std::make_unique<Hulk::Program>(
+                  std::move($1.decls),
+                  std::move($1.exprs.front())
+              );
+          } else {
+              $$ = std::make_unique<Hulk::Program>(
+                  std::move($1.decls),
+                  std::make_unique<Hulk::ExprBlock>(std::move($1.exprs))
+              );
+          }
           driver.set_result(std::move($$));
+      }
+    ;
+
+top_level_items
+    : top_level_item opt_semi
+      {
+          $$ = std::move($1);
+      }
+    | top_level_items top_level_item opt_semi
+      {
+          for (auto& decl : $2.decls) {
+              $1.decls.push_back(std::move(decl));
+          }
+          for (auto& expr : $2.exprs) {
+              $1.exprs.push_back(std::move(expr));
+          }
+          $$ = std::move($1);
+      }
+    ;
+
+top_level_item
+    : decl
+      {
+          $$ = hulk::parser::TopLevelItems {};
+          $$.decls.push_back(std::move($1));
+      }
+    | expr
+      {
+          $$ = hulk::parser::TopLevelItems {};
+          $$.exprs.push_back(std::move($1));
       }
     ;
 
 opt_semi
     : SEMICOLON
     |
-    ;
-
-decl_list
-    :
-      {
-          $$ = DeclList {};
-      }
-    | decl_list decl
-      {
-          $1.push_back(std::move($2));
-          $$ = std::move($1);
-      }
     ;
 
 decl
@@ -732,6 +771,24 @@ primary
     | PRINT LPAREN expr RPAREN
       {
           $$ = std::make_unique<Hulk::Print>(std::move($3));
+      }
+    | SQRT LPAREN expr RPAREN
+      {
+          ExprList args;
+          args.push_back(std::move($3));
+          $$ = std::make_unique<Hulk::BuiltinCall>(Hulk::BuiltinFunc::Sqrt, std::move(args));
+      }
+    | SIN LPAREN expr RPAREN
+      {
+          ExprList args;
+          args.push_back(std::move($3));
+          $$ = std::make_unique<Hulk::BuiltinCall>(Hulk::BuiltinFunc::Sin, std::move(args));
+      }
+    | COS LPAREN expr RPAREN
+      {
+          ExprList args;
+          args.push_back(std::move($3));
+          $$ = std::make_unique<Hulk::BuiltinCall>(Hulk::BuiltinFunc::Cos, std::move(args));
       }
     | RAND LPAREN RPAREN
       {

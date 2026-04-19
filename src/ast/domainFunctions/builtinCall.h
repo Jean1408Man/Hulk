@@ -9,6 +9,9 @@
 namespace Hulk {
 
     enum class BuiltinFunc {
+        Sqrt,
+        Sin,
+        Cos,
         Exp,
         Log,
         Rand,
