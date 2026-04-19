@@ -28,25 +28,30 @@ Por ahora el parser implementa y prueba:
 
 - literales;
 - `print(expr)`;
-- `exp`, `log`, `rand`, `PI`, `E`;
-- `+`, `-`, `*`, `/`, `^`;
+- `sqrt`, `sin`, `cos`, `exp`, `log`, `rand`, `PI`, `E`;
+- `+`, `-`, `*`, `/`, `%`, `^`;
 - `@` y `@@`;
 - `==`, `!=`, `<`, `<=`, `>`, `>=`;
 - `&`, `|`, `!`;
 - `let`;
 - `:=`;
 - bloques de expresiones.
-
-## Sintaxis documentada pero aún no soportada por este parser
-
-- `%`;
-- `sqrt`, `sin`, `cos` como builtins unarios;
 - `if / elif / else`;
 - `while`;
 - `for`;
 - funciones;
 - tipos;
-- acceso a miembros, llamadas a métodos, `new`, `is`, `as`.
+- acceso a miembros, llamadas a métodos, `new`, `is`, `as`;
+- secuencias top-level de expresiones y declaraciones.
+
+## Sintaxis documentada pero aún no soportada por este parser
+
+- protocolos;
+- `extends` en protocolos;
+- tipos extendidos como `T*`, `T[]` o tipos de functor;
+- vectores explícitos e implícitos;
+- lambdas;
+- macros y pattern matching.
 
 ## Nota importante
 

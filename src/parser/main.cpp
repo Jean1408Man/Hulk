@@ -100,6 +100,9 @@ const char* arith_unary_name(Hulk::ArithUnaryType op) {
 
 const char* builtin_name(Hulk::BuiltinFunc func) {
     switch (func) {
+        case Hulk::BuiltinFunc::Sqrt: return "Sqrt";
+        case Hulk::BuiltinFunc::Sin: return "Sin";
+        case Hulk::BuiltinFunc::Cos: return "Cos";
         case Hulk::BuiltinFunc::Exp: return "Exp";
         case Hulk::BuiltinFunc::Log: return "Log";
         case Hulk::BuiltinFunc::Rand: return "Rand";

@@ -1,0 +1,4 @@
+print(PI);
+print(E);
+function inc(x: Number): Number => x + 1;
+print(inc(4))

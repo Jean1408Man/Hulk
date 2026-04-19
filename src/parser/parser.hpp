@@ -110,9 +110,14 @@
             std::string name;
             bool isMember = false;
         };
+
+        struct TopLevelItems {
+            DeclList decls;
+            ExprList exprs;
+        };
     }
 
-#line 116 "src/parser/parser.hpp"
+#line 121 "src/parser/parser.hpp"
 
 
 # include <cstdlib> // std::abort
@@ -248,7 +253,7 @@
 
 #line 4 "src/parser/grammar.y"
 namespace hulk { namespace parser {
-#line 252 "src/parser/parser.hpp"
+#line 257 "src/parser/parser.hpp"
 
 
 
@@ -450,23 +455,20 @@ namespace hulk { namespace parser {
       // binding
       char dummy2[sizeof (BindingPtr)];
 
-      // decl_list
-      char dummy3[sizeof (DeclList)];
-
       // decl
       // function_decl
       // type_decl
-      char dummy4[sizeof (DeclPtr)];
+      char dummy3[sizeof (DeclPtr)];
 
       // elif_clauses
-      char dummy5[sizeof (ElifList)];
+      char dummy4[sizeof (ElifList)];
 
       // parent_args_opt
       // args_opt
       // arg_list
       // block_body_opt
       // expr_list
-      char dummy6[sizeof (ExprList)];
+      char dummy5[sizeof (ExprList)];
 
       // expr
       // let_expr
@@ -487,33 +489,37 @@ namespace hulk { namespace parser {
       // postfix
       // primary
       // block
-      char dummy7[sizeof (ExprPtr)];
+      char dummy6[sizeof (ExprPtr)];
 
       // param
-      char dummy8[sizeof (Hulk::Param)];
+      char dummy7[sizeof (Hulk::Param)];
 
       // type_member
-      char dummy9[sizeof (Hulk::TypeMember)];
+      char dummy8[sizeof (Hulk::TypeMember)];
 
       // ctor_params_opt
       // params_opt
       // param_list
-      char dummy10[sizeof (ParamList)];
+      char dummy9[sizeof (ParamList)];
 
       // program
-      char dummy11[sizeof (ProgramPtr)];
+      char dummy10[sizeof (ProgramPtr)];
 
       // type_member_list
-      char dummy12[sizeof (TypeMemberList)];
+      char dummy11[sizeof (TypeMemberList)];
 
       // NUMBER_LITERAL
-      char dummy13[sizeof (double)];
+      char dummy12[sizeof (double)];
 
       // inherits_opt
-      char dummy14[sizeof (hulk::parser::InheritsInfo)];
+      char dummy13[sizeof (hulk::parser::InheritsInfo)];
 
       // lvalue
-      char dummy15[sizeof (hulk::parser::LValueTarget)];
+      char dummy14[sizeof (hulk::parser::LValueTarget)];
+
+      // top_level_items
+      // top_level_item
+      char dummy15[sizeof (hulk::parser::TopLevelItems)];
 
       // IDENTIFIER
       // STRING_LITERAL
@@ -708,49 +714,50 @@ namespace hulk { namespace parser {
         S_UMINUS = 59,                           // UMINUS
         S_YYACCEPT = 60,                         // $accept
         S_program = 61,                          // program
-        S_opt_semi = 62,                         // opt_semi
-        S_decl_list = 63,                        // decl_list
-        S_decl = 64,                             // decl
-        S_function_decl = 65,                    // function_decl
-        S_type_decl = 66,                        // type_decl
-        S_ctor_params_opt = 67,                  // ctor_params_opt
-        S_inherits_opt = 68,                     // inherits_opt
-        S_parent_args_opt = 69,                  // parent_args_opt
-        S_type_member_list = 70,                 // type_member_list
-        S_type_member = 71,                      // type_member
-        S_params_opt = 72,                       // params_opt
-        S_param_list = 73,                       // param_list
-        S_param = 74,                            // param
-        S_return_ann_opt = 75,                   // return_ann_opt
-        S_type_ann_opt = 76,                     // type_ann_opt
-        S_type_expr = 77,                        // type_expr
-        S_expr = 78,                             // expr
-        S_let_expr = 79,                         // let_expr
-        S_binding_list = 80,                     // binding_list
-        S_binding = 81,                          // binding
-        S_if_expr = 82,                          // if_expr
-        S_elif_clauses = 83,                     // elif_clauses
-        S_while_expr = 84,                       // while_expr
-        S_for_expr = 85,                         // for_expr
-        S_assign_expr = 86,                      // assign_expr
-        S_lvalue = 87,                           // lvalue
-        S_logic_or = 88,                         // logic_or
-        S_logic_and = 89,                        // logic_and
-        S_equality = 90,                         // equality
-        S_relation = 91,                         // relation
-        S_type_test_expr = 92,                   // type_test_expr
-        S_concat = 93,                           // concat
-        S_additive = 94,                         // additive
-        S_multiplicative = 95,                   // multiplicative
-        S_power = 96,                            // power
-        S_unary = 97,                            // unary
-        S_postfix = 98,                          // postfix
-        S_primary = 99,                          // primary
-        S_args_opt = 100,                        // args_opt
-        S_arg_list = 101,                        // arg_list
-        S_block = 102,                           // block
-        S_block_body_opt = 103,                  // block_body_opt
-        S_expr_list = 104                        // expr_list
+        S_top_level_items = 62,                  // top_level_items
+        S_top_level_item = 63,                   // top_level_item
+        S_opt_semi = 64,                         // opt_semi
+        S_decl = 65,                             // decl
+        S_function_decl = 66,                    // function_decl
+        S_type_decl = 67,                        // type_decl
+        S_ctor_params_opt = 68,                  // ctor_params_opt
+        S_inherits_opt = 69,                     // inherits_opt
+        S_parent_args_opt = 70,                  // parent_args_opt
+        S_type_member_list = 71,                 // type_member_list
+        S_type_member = 72,                      // type_member
+        S_params_opt = 73,                       // params_opt
+        S_param_list = 74,                       // param_list
+        S_param = 75,                            // param
+        S_return_ann_opt = 76,                   // return_ann_opt
+        S_type_ann_opt = 77,                     // type_ann_opt
+        S_type_expr = 78,                        // type_expr
+        S_expr = 79,                             // expr
+        S_let_expr = 80,                         // let_expr
+        S_binding_list = 81,                     // binding_list
+        S_binding = 82,                          // binding
+        S_if_expr = 83,                          // if_expr
+        S_elif_clauses = 84,                     // elif_clauses
+        S_while_expr = 85,                       // while_expr
+        S_for_expr = 86,                         // for_expr
+        S_assign_expr = 87,                      // assign_expr
+        S_lvalue = 88,                           // lvalue
+        S_logic_or = 89,                         // logic_or
+        S_logic_and = 90,                        // logic_and
+        S_equality = 91,                         // equality
+        S_relation = 92,                         // relation
+        S_type_test_expr = 93,                   // type_test_expr
+        S_concat = 94,                           // concat
+        S_additive = 95,                         // additive
+        S_multiplicative = 96,                   // multiplicative
+        S_power = 97,                            // power
+        S_unary = 98,                            // unary
+        S_postfix = 99,                          // postfix
+        S_primary = 100,                         // primary
+        S_args_opt = 101,                        // args_opt
+        S_arg_list = 102,                        // arg_list
+        S_block = 103,                           // block
+        S_block_body_opt = 104,                  // block_body_opt
+        S_expr_list = 105                        // expr_list
       };
     };
 
@@ -793,10 +800,6 @@ namespace hulk { namespace parser {
 
       case symbol_kind::S_binding: // binding
         value.move< BindingPtr > (std::move (that.value));
-        break;
-
-      case symbol_kind::S_decl_list: // decl_list
-        value.move< DeclList > (std::move (that.value));
         break;
 
       case symbol_kind::S_decl: // decl
@@ -873,6 +876,11 @@ namespace hulk { namespace parser {
         value.move< hulk::parser::LValueTarget > (std::move (that.value));
         break;
 
+      case symbol_kind::S_top_level_items: // top_level_items
+      case symbol_kind::S_top_level_item: // top_level_item
+        value.move< hulk::parser::TopLevelItems > (std::move (that.value));
+        break;
+
       case symbol_kind::S_IDENTIFIER: // IDENTIFIER
       case symbol_kind::S_STRING_LITERAL: // STRING_LITERAL
       case symbol_kind::S_ERROR_TOKEN: // ERROR_TOKEN
@@ -927,20 +935,6 @@ namespace hulk { namespace parser {
       {}
 #else
       basic_symbol (typename Base::kind_type t, const BindingPtr& v, const location_type& l)
-        : Base (t)
-        , value (v)
-        , location (l)
-      {}
-#endif
-
-#if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, DeclList&& v, location_type&& l)
-        : Base (t)
-        , value (std::move (v))
-        , location (std::move (l))
-      {}
-#else
-      basic_symbol (typename Base::kind_type t, const DeclList& v, const location_type& l)
         : Base (t)
         , value (v)
         , location (l)
@@ -1116,6 +1110,20 @@ namespace hulk { namespace parser {
 #endif
 
 #if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, hulk::parser::TopLevelItems&& v, location_type&& l)
+        : Base (t)
+        , value (std::move (v))
+        , location (std::move (l))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const hulk::parser::TopLevelItems& v, const location_type& l)
+        : Base (t)
+        , value (v)
+        , location (l)
+      {}
+#endif
+
+#if 201103L <= YY_CPLUSPLUS
       basic_symbol (typename Base::kind_type t, std::string&& v, location_type&& l)
         : Base (t)
         , value (std::move (v))
@@ -1159,10 +1167,6 @@ switch (yykind)
 
       case symbol_kind::S_binding: // binding
         value.template destroy< BindingPtr > ();
-        break;
-
-      case symbol_kind::S_decl_list: // decl_list
-        value.template destroy< DeclList > ();
         break;
 
       case symbol_kind::S_decl: // decl
@@ -1237,6 +1241,11 @@ switch (yykind)
 
       case symbol_kind::S_lvalue: // lvalue
         value.template destroy< hulk::parser::LValueTarget > ();
+        break;
+
+      case symbol_kind::S_top_level_items: // top_level_items
+      case symbol_kind::S_top_level_item: // top_level_item
+        value.template destroy< hulk::parser::TopLevelItems > ();
         break;
 
       case symbol_kind::S_IDENTIFIER: // IDENTIFIER
@@ -2633,9 +2642,9 @@ switch (yykind)
     /// Constants.
     enum
     {
-      yylast_ = 253,     ///< Last index in yytable_.
-      yynnts_ = 45,  ///< Number of nonterminal symbols.
-      yyfinal_ = 3 ///< Termination state number.
+      yylast_ = 297,     ///< Last index in yytable_.
+      yynnts_ = 46,  ///< Number of nonterminal symbols.
+      yyfinal_ = 76 ///< Termination state number.
     };
 
 
@@ -2715,10 +2724,6 @@ switch (yykind)
         value.copy< BindingPtr > (YY_MOVE (that.value));
         break;
 
-      case symbol_kind::S_decl_list: // decl_list
-        value.copy< DeclList > (YY_MOVE (that.value));
-        break;
-
       case symbol_kind::S_decl: // decl
       case symbol_kind::S_function_decl: // function_decl
       case symbol_kind::S_type_decl: // type_decl
@@ -2793,6 +2798,11 @@ switch (yykind)
         value.copy< hulk::parser::LValueTarget > (YY_MOVE (that.value));
         break;
 
+      case symbol_kind::S_top_level_items: // top_level_items
+      case symbol_kind::S_top_level_item: // top_level_item
+        value.copy< hulk::parser::TopLevelItems > (YY_MOVE (that.value));
+        break;
+
       case symbol_kind::S_IDENTIFIER: // IDENTIFIER
       case symbol_kind::S_STRING_LITERAL: // STRING_LITERAL
       case symbol_kind::S_ERROR_TOKEN: // ERROR_TOKEN
@@ -2839,10 +2849,6 @@ switch (yykind)
 
       case symbol_kind::S_binding: // binding
         value.move< BindingPtr > (YY_MOVE (s.value));
-        break;
-
-      case symbol_kind::S_decl_list: // decl_list
-        value.move< DeclList > (YY_MOVE (s.value));
         break;
 
       case symbol_kind::S_decl: // decl
@@ -2917,6 +2923,11 @@ switch (yykind)
 
       case symbol_kind::S_lvalue: // lvalue
         value.move< hulk::parser::LValueTarget > (YY_MOVE (s.value));
+        break;
+
+      case symbol_kind::S_top_level_items: // top_level_items
+      case symbol_kind::S_top_level_item: // top_level_item
+        value.move< hulk::parser::TopLevelItems > (YY_MOVE (s.value));
         break;
 
       case symbol_kind::S_IDENTIFIER: // IDENTIFIER
@@ -2995,17 +3006,17 @@ switch (yykind)
 
 #line 4 "src/parser/grammar.y"
 } } // hulk::parser
-#line 2999 "src/parser/parser.hpp"
+#line 3010 "src/parser/parser.hpp"
 
 
 // "%code provides" blocks.
-#line 80 "src/parser/grammar.y"
+#line 85 "src/parser/grammar.y"
 
     namespace hulk::parser {
         Parser::symbol_type yylex(ParserDriver& driver);
     }
 
-#line 3009 "src/parser/parser.hpp"
+#line 3020 "src/parser/parser.hpp"
 
 
 #endif // !YY_YY_SRC_PARSER_PARSER_HPP_INCLUDED
