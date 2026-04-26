@@ -1,0 +1,3 @@
+// Error: acceso a miembro sobre un número (no es objeto)
+// Esperado: EVAL_TYPE_NOT_OBJECT
+let x = 42 in print(x.algo);

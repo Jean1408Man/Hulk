@@ -6,6 +6,9 @@
 #include "../objects/hulk_value.h"
 #include "../objects/hulk_object.h"
 #include "../ast/others/program.h"
+#include "../common/diagnosticEngine.hpp"
+#include "../common/diagnosticRepository.hpp"
+#include "../common/span.hpp"
 
 #include <string>
 #include <unordered_map>
@@ -16,10 +19,11 @@
 namespace Hulk {
 
     // -----------------------------------------------------------------------
-    // EvalError — excepción interna del evaluador con mensaje de posición
+    // EvalError — excepción interna que corta la evaluación.
+    // El mensaje ya fue registrado en el DiagnosticEngine antes de lanzar.
     // -----------------------------------------------------------------------
     struct EvalError : std::runtime_error {
-        explicit EvalError(const std::string& msg) : std::runtime_error(msg) {}
+        explicit EvalError() : std::runtime_error("eval error") {}
     };
 
     // -----------------------------------------------------------------------
@@ -34,7 +38,7 @@ namespace Hulk {
     // -----------------------------------------------------------------------
     class Evaluator : public ExprVisitor, public DeclVisitor {
     public:
-        Evaluator();
+        explicit Evaluator(hulk::common::DiagnosticEngine& engine);
 
         // Punto de entrada: evalúa un Program completo
         void run(Program& program);
@@ -43,11 +47,36 @@ namespace Hulk {
         // ------------------------------------------------------------------
         // Estado del evaluador
         // ------------------------------------------------------------------
+        hulk::common::DiagnosticEngine& engine_;                // diagnósticos compartidos
         HulkValue result_;                                      // registro de retorno
         std::shared_ptr<Environment> env_;                      // scope actual
         std::unordered_map<std::string, FunctionDecl*> funcs_; // tabla global de funciones
         std::unordered_map<std::string, TypeDef> types_;        // tabla global de tipos
         HulkValue self_;                                        // instancia actual en métodos
+
+        // ------------------------------------------------------------------
+        // Helper para reportar un error y lanzar EvalError
+        // ------------------------------------------------------------------
+        template<typename... Args>
+        [[noreturn]] void report_error(const hulk::common::Span& span,
+                                       const std::string& error_id,
+                                       Args&&... args) {
+            engine_.report(error_id,
+                           hulk::common::DiagnosticLevel::Semantic,
+                           hulk::common::Severity::Error,
+                           span,
+                           std::forward<Args>(args)...);
+            throw EvalError{};
+        }
+
+        [[noreturn]] void report_error_raw(const hulk::common::Span& span,
+                                           const std::string& msg) {
+            engine_.report_raw(hulk::common::DiagnosticLevel::Semantic,
+                               hulk::common::Severity::Error,
+                               span,
+                               msg);
+            throw EvalError{};
+        }
 
         // ------------------------------------------------------------------
         // Helpers internos

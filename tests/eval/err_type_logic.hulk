@@ -1,0 +1,3 @@
+// Error: comparación >= con un string (requiere Number)
+// Esperado: EVAL_TYPE_ARITH (comparadores numéricos)
+print("hola" >= 1);

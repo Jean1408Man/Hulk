@@ -1,0 +1,3 @@
+// Error: función 'foo' no definida
+// Esperado: EVAL_UNDECLARED_FUNC
+foo(1, 2);

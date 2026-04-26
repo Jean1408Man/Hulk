@@ -1,0 +1,14 @@
+// Error: cast inválido — Animal no es Perro
+// Esperado: EVAL_INVALID_CAST
+type Animal(name) {
+    name = name;
+    speak() => print("...");
+}
+type Perro(name) inherits Animal(name) {
+    speak() => print("Woof!");
+}
+type Gato(name) inherits Animal(name) {
+    speak() => print("Miau!");
+}
+let g = new Gato("Mishi") in
+    let p = (g as Perro) in print("no debe llegar aqui");

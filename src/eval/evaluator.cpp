@@ -52,8 +52,8 @@ namespace Hulk {
 // Constructor y punto de entrada
 // ============================================================================
 
-Evaluator::Evaluator()
-    : env_(std::make_shared<Environment>())
+Evaluator::Evaluator(hulk::common::DiagnosticEngine& engine)
+    : engine_(engine), env_(std::make_shared<Environment>())
 {}
 
 void Evaluator::run(Program& program) {
@@ -160,7 +160,8 @@ void Evaluator::visit(ArithmeticBinOp& n) {
     HulkValue right = eval(n.GetRight());
 
     if (!left.is_number() || !right.is_number())
-        throw EvalError("Operación aritmética requiere Number");
+        report_error(n.span, "EVAL_TYPE_ARITH",
+                     left.is_number() ? right.to_string() : left.to_string());
 
     double l = left.as_number();
     double r = right.as_number();
@@ -170,11 +171,11 @@ void Evaluator::visit(ArithmeticBinOp& n) {
         case ArithmeticOp::Minus: result_ = HulkValue(l - r); break;
         case ArithmeticOp::Mult:  result_ = HulkValue(l * r); break;
         case ArithmeticOp::Div:
-            if (r == 0) throw EvalError("División por cero");
+            if (r == 0) report_error(n.span, "EVAL_DIV_ZERO");
             result_ = HulkValue(l / r);
             break;
         case ArithmeticOp::Mod:
-            if (r == 0) throw EvalError("Módulo por cero");
+            if (r == 0) report_error(n.span, "EVAL_MOD_ZERO");
             result_ = HulkValue(std::fmod(l, r));
             break;
         case ArithmeticOp::Pow:
@@ -186,7 +187,7 @@ void Evaluator::visit(ArithmeticBinOp& n) {
 void Evaluator::visit(ArithmeticUnaryOp& n) {
     HulkValue val = eval(n.GetOperand());
     if (!val.is_number())
-        throw EvalError("Negación unaria requiere Number");
+        report_error(n.span, "EVAL_TYPE_ARITH", val.to_string());
     result_ = HulkValue(-val.as_number());
 }
 
@@ -236,22 +237,26 @@ void Evaluator::visit(LogicBinOp& n) {
             break;
         case LogicOp::Greater:
             if (!left.is_number() || !right.is_number())
-                throw EvalError("Comparación > requiere Number");
+                report_error(n.span, "EVAL_TYPE_ARITH",
+                             left.is_number() ? right.to_string() : left.to_string());
             result_ = HulkValue(left.as_number() > right.as_number());
             break;
         case LogicOp::Less:
             if (!left.is_number() || !right.is_number())
-                throw EvalError("Comparación < requiere Number");
+                report_error(n.span, "EVAL_TYPE_ARITH",
+                             left.is_number() ? right.to_string() : left.to_string());
             result_ = HulkValue(left.as_number() < right.as_number());
             break;
         case LogicOp::GreaterEqual:
             if (!left.is_number() || !right.is_number())
-                throw EvalError("Comparación >= requiere Number");
+                report_error(n.span, "EVAL_TYPE_ARITH",
+                             left.is_number() ? right.to_string() : left.to_string());
             result_ = HulkValue(left.as_number() >= right.as_number());
             break;
         case LogicOp::LessEqual:
             if (!left.is_number() || !right.is_number())
-                throw EvalError("Comparación <= requiere Number");
+                report_error(n.span, "EVAL_TYPE_ARITH",
+                             left.is_number() ? right.to_string() : left.to_string());
             result_ = HulkValue(left.as_number() <= right.as_number());
             break;
         default: break;
@@ -291,7 +296,7 @@ void Evaluator::visit(BuiltinCall& n) {
     auto num_arg = [&](size_t i) -> double {
         HulkValue v = eval(args[i].get());
         if (!v.is_number())
-            throw EvalError("Argumento de función builtin debe ser Number");
+            report_error(n.span, "EVAL_TYPE_ARITH", v.to_string());
         return v.as_number();
     };
 
@@ -384,7 +389,7 @@ void Evaluator::visit(For& n) {
     HulkValue iterable = eval(n.GetIterable());
 
     if (!iterable.is_vector())
-        throw EvalError("for requiere un iterable (vector)");
+        report_error(n.span, "EVAL_TYPE_NOT_VECTOR", iterable.to_string());
 
     auto prev_env = env_;
     result_ = HulkValue{};
@@ -401,10 +406,14 @@ void Evaluator::visit(For& n) {
 // ============================================================================
 
 void Evaluator::visit(VariableReference& n) {
+    if (!env_->contains(n.GetName()))
+        report_error(n.span, "EVAL_UNDECLARED_VAR", n.GetName());
     result_ = env_->get(n.GetName());
 }
 
 void Evaluator::visit(DestructiveAssign& n) {
+    if (!env_->contains(n.GetName()))
+        report_error(n.span, "EVAL_ASSIGN_UNDECLARED", n.GetName());
     HulkValue val = eval(n.GetValue());
     env_->assign(n.GetName(), val);
     result_ = val;
@@ -413,7 +422,7 @@ void Evaluator::visit(DestructiveAssign& n) {
 void Evaluator::visit(DestructiveAssignMember& n) {
     HulkValue obj_val = eval(n.GetObject());
     if (!obj_val.is_object())
-        throw EvalError("Asignación a miembro requiere un objeto");
+        report_error(n.span, "EVAL_TYPE_NOT_OBJECT", obj_val.to_string());
     HulkValue val = eval(n.GetValue());
     obj_val.as_object()->fields[n.GetMemberName()] = val;
     result_ = val;
@@ -429,14 +438,15 @@ void Evaluator::visit(FunctionCall& n) {
     // Buscar en tabla global
     auto it = funcs_.find(n.GetName());
     if (it == funcs_.end())
-        throw EvalError("Función no definida: '" + n.GetName() + "'");
+        report_error(n.span, "EVAL_UNDECLARED_FUNC", n.GetName());
 
     FunctionDecl* decl = it->second;
     const auto& params = decl->GetParams();
     const auto& args   = n.GetArgs();
 
     if (params.size() != args.size())
-        throw EvalError("Aridad incorrecta al llamar '" + n.GetName() + "'");
+        report_error(n.span, "EVAL_ARITY_FUNC",
+                     n.GetName(), params.size(), args.size());
 
     // Evaluar argumentos en el scope actual
     std::vector<HulkValue> arg_vals;
@@ -455,10 +465,10 @@ void Evaluator::visit(FunctionCall& n) {
     env_ = prev_env;
 }
 
-void Evaluator::visit(Lambda& /*n*/) {
+void Evaluator::visit(Lambda& n) {
     // Lambdas de primera clase no soportadas en esta versión.
     // El parser desazucara la mayoría de lambdas inline antes de llegar aquí.
-    throw EvalError("Lambda de primera clase no soportada en esta versión");
+    report_error_raw(n.span, "Lambda de primera clase no soportada en esta versión");
 }
 
 // ============================================================================
@@ -501,13 +511,14 @@ void Evaluator::visit(ProtocolDecl& n)        { (void)n; result_ = HulkValue{}; 
 void Evaluator::visit(NewExpr& n) {
     auto it = types_.find(n.GetTypeName());
     if (it == types_.end())
-        throw EvalError("Tipo no definido: '" + n.GetTypeName() + "'");
+        report_error(n.span, "EVAL_UNDECLARED_TYPE", n.GetTypeName());
 
     const TypeDef& def = it->second;
     const auto& args   = n.GetArgs();
 
     if (def.ctor_params.size() != args.size())
-        throw EvalError("Aridad incorrecta en constructor de '" + n.GetTypeName() + "'");
+        report_error(n.span, "EVAL_ARITY_CTOR",
+                     n.GetTypeName(), def.ctor_params.size(), args.size());
 
     // Evaluar argumentos del constructor
     std::vector<HulkValue> ctor_vals;
@@ -524,12 +535,13 @@ void Evaluator::visit(NewExpr& n) {
 void Evaluator::visit(MemberAccess& n) {
     HulkValue obj_val = eval(n.GetObject());
     if (!obj_val.is_object())
-        throw EvalError("Acceso a miembro en un no-objeto");
+        report_error(n.span, "EVAL_TYPE_NOT_OBJECT", obj_val.to_string());
 
     auto& obj = *obj_val.as_object();
     auto it = obj.fields.find(n.GetMemberName());
     if (it == obj.fields.end())
-        throw EvalError("Atributo no definido: '" + n.GetMemberName() + "'");
+        report_error(n.span, "EVAL_UNDECLARED_MEMBER",
+                     n.GetMemberName(), obj.type_name);
 
     result_ = it->second;
 }
@@ -537,19 +549,20 @@ void Evaluator::visit(MemberAccess& n) {
 void Evaluator::visit(MethodCall& n) {
     HulkValue obj_val = eval(n.GetObject());
     if (!obj_val.is_object())
-        throw EvalError("Llamada a método en un no-objeto");
+        report_error(n.span, "EVAL_TYPE_NOT_OBJECT", obj_val.to_string());
 
     auto obj_ptr = obj_val.as_object();
     const std::string& type_name = obj_ptr->type_name;
 
     const MethodDef* method = find_method(type_name, n.GetMethodName());
     if (!method)
-        throw EvalError("Método '" + n.GetMethodName() +
-                        "' no encontrado en tipo '" + type_name + "'");
+        report_error(n.span, "EVAL_UNDECLARED_MEMBER",
+                     n.GetMethodName(), type_name);
 
     const auto& args = n.GetArgs();
     if (method->params.size() != args.size())
-        throw EvalError("Aridad incorrecta en método '" + n.GetMethodName() + "'");
+        report_error(n.span, "EVAL_ARITY_METHOD",
+                     n.GetMethodName(), method->params.size(), args.size());
 
     // Evaluar argumentos
     std::vector<HulkValue> arg_vals;
@@ -579,20 +592,18 @@ void Evaluator::visit(SelfRef&) {
 }
 
 void Evaluator::visit(BaseCall& n) {
-    // base(...) llama al constructor del padre de la clase actual.
-    // Debe usarse sólo dentro de un método o constructor de un tipo hijo.
     if (!self_.is_object())
-        throw EvalError("base() solo puede usarse dentro de un método");
+        report_error_raw(n.span, "base() solo puede usarse dentro de un método");
 
     const std::string& current_type = self_.as_object()->type_name;
     auto it = types_.find(current_type);
     if (it == types_.end() || it->second.parent_name.empty())
-        throw EvalError("Tipo '" + current_type + "' no tiene padre para llamar base()");
+        report_error(n.span, "EVAL_NO_PARENT", current_type);
 
     const std::string& parent_name = it->second.parent_name;
     auto pit = types_.find(parent_name);
     if (pit == types_.end())
-        throw EvalError("Tipo padre '" + parent_name + "' no definido");
+        report_error(n.span, "EVAL_UNDECLARED_TYPE", parent_name);
 
     std::vector<HulkValue> arg_vals;
     for (auto& arg : n.GetArgs())
@@ -638,7 +649,9 @@ void Evaluator::visit(AsExpr& n) {
         }
     }
     if (!valid)
-        throw EvalError("Cast inválido: el objeto no es '" + n.GetTypeName() + "'");
+        report_error(n.span, "EVAL_INVALID_CAST",
+                     val.is_object() ? val.as_object()->type_name : val.to_string(),
+                     n.GetTypeName());
     result_ = val;
 }
 
@@ -658,14 +671,14 @@ void Evaluator::visit(VectorIndex& n) {
     HulkValue idx_val = eval(n.GetIndex());
 
     if (!vec_val.is_vector())
-        throw EvalError("Indexación requiere un vector");
+        report_error(n.span, "EVAL_TYPE_NOT_VECTOR", vec_val.to_string());
     if (!idx_val.is_number())
-        throw EvalError("Índice debe ser Number");
+        report_error(n.span, "EVAL_TYPE_ARITH", idx_val.to_string());
 
     auto& vec = *vec_val.as_vector();
     long long idx = (long long)idx_val.as_number();
     if (idx < 0 || idx >= (long long)vec.size())
-        throw EvalError("Índice fuera de rango: " + std::to_string(idx));
+        report_error(n.span, "EVAL_INDEX_OUT_OF_RANGE", idx, (long long)vec.size());
 
     result_ = vec[idx];
 }
@@ -673,7 +686,7 @@ void Evaluator::visit(VectorIndex& n) {
 void Evaluator::visit(VectorGenerator& n) {
     HulkValue iterable = eval(n.GetIterable());
     if (!iterable.is_vector())
-        throw EvalError("Vector generator requiere un iterable (vector)");
+        report_error(n.span, "EVAL_TYPE_NOT_VECTOR", iterable.to_string());
 
     auto result_vec = std::make_shared<HulkVector>();
     auto prev_env = env_;

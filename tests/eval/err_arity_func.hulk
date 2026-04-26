@@ -1,0 +1,4 @@
+// Error: aridad incorrecta — suma espera 2 args, recibe 1
+// Esperado: EVAL_ARITY_FUNC
+function suma(a, b) => a + b;
+suma(5);

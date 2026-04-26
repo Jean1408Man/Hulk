@@ -1,0 +1,3 @@
+// Error: asignación destructiva a variable no declarada
+// Esperado: EVAL_ASSIGN_UNDECLARED
+z := 42;

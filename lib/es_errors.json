@@ -5,5 +5,23 @@
   "INVALID_CHAR":           "Carácter inválido: '{}'.",
   "UNTERMINATED_STRING_EOL":"String sin cerrar: se encontró un salto de línea antes del cierre '\"'.",
   "UNTERMINATED_STRING_EOF":"String sin cerrar: se llegó al fin del archivo sin encontrar '\"'.",
-  "INCOMPLETE_ESCAPE":      "Secuencia de escape incompleta: se llegó al fin del archivo después de '\\'."
+  "INCOMPLETE_ESCAPE":      "Secuencia de escape incompleta: se llegó al fin del archivo después de '\\'.",
+
+  "EVAL_UNDECLARED_VAR":    "Variable no declarada: '{}'.",
+  "EVAL_UNDECLARED_FUNC":   "Función no definida: '{}'.",
+  "EVAL_UNDECLARED_TYPE":   "Tipo no definido: '{}'.",
+  "EVAL_UNDECLARED_MEMBER": "Atributo o método '{}' no encontrado en el tipo '{}'.",
+  "EVAL_ARITY_FUNC":        "La función '{}' espera {} argumento(s) pero recibió {}.",
+  "EVAL_ARITY_CTOR":        "El constructor de '{}' espera {} argumento(s) pero recibió {}.",
+  "EVAL_ARITY_METHOD":      "El método '{}' espera {} argumento(s) pero recibió {}.",
+  "EVAL_TYPE_ARITH":        "Operación aritmética requiere Number, se obtuvo {}.",
+  "EVAL_TYPE_LOGIC":        "Operación lógica requiere Boolean, se obtuvo {}.",
+  "EVAL_TYPE_NOT_OBJECT":   "Se esperaba un objeto pero se obtuvo {}.",
+  "EVAL_TYPE_NOT_VECTOR":   "Se esperaba un vector pero se obtuvo {}.",
+  "EVAL_DIV_ZERO":          "División por cero.",
+  "EVAL_MOD_ZERO":          "Módulo por cero.",
+  "EVAL_INDEX_OUT_OF_RANGE":"Índice {} fuera de rango (tamaño: {}).",
+  "EVAL_INVALID_CAST":      "Cast inválido: el objeto de tipo '{}' no es compatible con '{}'.",
+  "EVAL_NO_PARENT":         "El tipo '{}' no tiene tipo padre.",
+  "EVAL_ASSIGN_UNDECLARED": "No se puede asignar: la variable '{}' no fue declarada."
 }

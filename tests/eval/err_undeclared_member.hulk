@@ -1,0 +1,7 @@
+// Error: atributo 'z' no existe en Punto
+// Esperado: EVAL_UNDECLARED_MEMBER
+type Punto(x, y) {
+    x = x;
+    y = y;
+}
+let p = new Punto(1, 2) in print(p.z);

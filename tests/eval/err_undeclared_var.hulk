@@ -1,0 +1,3 @@
+// Error: variable 'x' no declarada
+// Esperado: EVAL_UNDECLARED_VAR
+print(x);

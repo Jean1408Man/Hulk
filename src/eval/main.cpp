@@ -49,11 +49,20 @@ int main(int argc, char* argv[]) {
         auto* program = dynamic_cast<Hulk::Program*>(root);
         if (!program) { std::cerr << "El AST raíz no es un Program\n"; return 1; }
 
-        Hulk::Evaluator ev;
-        ev.run(*program);
+        Hulk::Evaluator ev(engine);
+        try {
+            ev.run(*program);
+        } catch (const Hulk::EvalError&) {
+            // El error ya fue registrado en el engine — solo imprimimos
+        }
+
+        if (engine.has_errors()) {
+            engine.print_all();
+            return 1;
+        }
 
     } catch (const std::exception& e) {
-        std::cerr << "Error: " << e.what() << "\n";
+        std::cerr << "Error inesperado: " << e.what() << "\n";
         return 1;
     }
 

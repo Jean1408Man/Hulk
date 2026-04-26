@@ -1,0 +1,3 @@
+// Error: módulo por cero
+// Esperado: EVAL_MOD_ZERO
+print(7 % 0);

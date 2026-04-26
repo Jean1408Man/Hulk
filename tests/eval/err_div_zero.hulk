@@ -1,0 +1,3 @@
+// Error: división por cero
+// Esperado: EVAL_DIV_ZERO
+print(10 / 0);

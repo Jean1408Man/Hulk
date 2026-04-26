@@ -1,0 +1,9 @@
+// Error: constructor de Punto espera 2 args, recibe 1
+// Esperado: EVAL_ARITY_CTOR
+type Punto(x, y) {
+    getX() => self.x;
+    getY() => self.y;
+    x = x;
+    y = y;
+}
+let p = new Punto(3) in print(p.getX());

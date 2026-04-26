@@ -60,7 +60,7 @@ PARSER_OBJS    := $(OBJDIR)/parser/parser.o \
                   $(OBJDIR)/parser/parser_lexer_adapter.o
 EVAL_OBJS      := $(patsubst src/%.cpp,$(OBJDIR)/%.o,$(EVAL_SRCS))
 
-.PHONY: all parser-gen lexer parser-demo parser-tests eval eval-tests clean
+.PHONY: all parser-gen lexer parser-demo parser-tests eval eval-tests err-tests clean
 
 all: lexer parser-demo eval
 
@@ -129,19 +129,27 @@ eval-tests: eval
 	@echo "=== Corte 4: expresiones básicas ==="; \
 	for f in tests/eval/c4_*.hulk; do \
 		echo "----- $$f -----"; \
-		./hulk_eval $$f || true; \
+		./hulk_eval $$f 2>/dev/null || true; \
 		echo; \
 	done; \
 	echo "=== Corte 5: variables y funciones ==="; \
 	for f in tests/eval/c5_*.hulk; do \
 		echo "----- $$f -----"; \
-		./hulk_eval $$f || true; \
+		./hulk_eval $$f 2>/dev/null || true; \
 		echo; \
 	done; \
 	echo "=== Corte 6: objetos y herencia ==="; \
 	for f in tests/eval/c6_*.hulk; do \
 		echo "----- $$f -----"; \
-		./hulk_eval $$f || true; \
+		./hulk_eval $$f 2>/dev/null || true; \
+		echo; \
+	done
+
+err-tests: eval
+	@echo "=== Tests de error (deben fallar con mensaje diagnóstico) ==="; \
+	for f in tests/eval/err_*.hulk; do \
+		echo "----- $$f -----"; \
+		./hulk_eval $$f 1>/dev/null; \
 		echo; \
 	done
 

@@ -1,0 +1,3 @@
+// Error: operación aritmética con un booleano
+// Esperado: EVAL_TYPE_ARITH
+print(true + 1);

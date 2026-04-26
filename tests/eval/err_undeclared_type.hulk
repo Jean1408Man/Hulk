@@ -1,0 +1,3 @@
+// Error: tipo 'Fantasma' no definido
+// Esperado: EVAL_UNDECLARED_TYPE
+let x = new Fantasma() in print(x);
