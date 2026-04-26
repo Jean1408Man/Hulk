@@ -10,6 +10,7 @@ namespace Hulk {
         SelfRef() = default;
 
         std::string ToString() const override;
+        void accept(ExprVisitor& v) override;
     };
 
 }

@@ -13,6 +13,7 @@ namespace Hulk {
         explicit Number(double val);
         double GetValue() const;
         std::string ToString() const override;
+        void accept(ExprVisitor& v) override;
     };
 
 }

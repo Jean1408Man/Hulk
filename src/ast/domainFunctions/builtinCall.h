@@ -31,6 +31,7 @@ namespace Hulk {
         const std::vector<std::unique_ptr<Expr>>& GetArgs() const;
 
         std::string ToString() const override;
+        void accept(ExprVisitor& v) override;
     };
 
 }

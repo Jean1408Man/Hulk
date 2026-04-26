@@ -18,6 +18,7 @@ namespace Hulk {
         ArithUnaryType GetType() const { return type; }
 
         std::string ToString() const override;
+        void accept(ExprVisitor& v) override;
     };
 
 }

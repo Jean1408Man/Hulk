@@ -17,6 +17,7 @@ namespace Hulk {
         ArithmeticOp GetOperator() const { return op; }
         
         std::string ToString() const override;
+        void accept(ExprVisitor& v) override;
     };
 
 }

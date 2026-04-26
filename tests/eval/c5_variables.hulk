@@ -1,0 +1,12 @@
+// Shadowing: la x interior no afecta la exterior
+let x = 10 in {
+    let x = 20 in print(x);
+    print(x);
+};
+
+// Destructive assign
+let y = 1 in {
+    y := y + 1;
+    y := y + 1;
+    print(y);
+};

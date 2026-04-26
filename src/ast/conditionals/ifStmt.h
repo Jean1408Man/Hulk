@@ -27,6 +27,7 @@ namespace Hulk {
         Expr* GetElseBranch() const;
 
         std::string ToString() const override;
+        void accept(ExprVisitor& v) override;
     };
 
 }

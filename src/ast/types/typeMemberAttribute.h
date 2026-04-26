@@ -28,6 +28,7 @@ namespace Hulk {
         Expr* GetInitializer() const;
 
         std::string ToString() const override;
+        void accept(DeclVisitor& v) override;
     };
 
 }

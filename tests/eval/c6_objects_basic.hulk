@@ -1,0 +1,11 @@
+type Point(x, y) {
+    x = x;
+    y = y;
+    distance() => sqrt(self.x * self.x + self.y * self.y);
+}
+
+let p = new Point(3, 4) in {
+    print(p.x);
+    print(p.y);
+    print(p.distance());
+};

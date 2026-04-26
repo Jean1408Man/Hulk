@@ -13,6 +13,7 @@ namespace Hulk {
         explicit Boolean(bool val);
         bool GetValue() const;
         std::string ToString() const override;
+        void accept(ExprVisitor& v) override;
     };
 
 }

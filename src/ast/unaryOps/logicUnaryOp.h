@@ -15,6 +15,7 @@ namespace Hulk {
 
         // Solo declaramos el método, la lógica va al .cpp
         std::string ToString() const override;
+        void accept(ExprVisitor& v) override;
     };
 
 }

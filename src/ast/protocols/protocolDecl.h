@@ -28,6 +28,7 @@ namespace Hulk {
         const std::vector<ProtocolMethodSig>& GetMethodSigs() const;
 
         std::string ToString() const override;
+        void accept(DeclVisitor& v) override;
     };
 
 }

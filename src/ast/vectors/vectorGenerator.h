@@ -23,6 +23,7 @@ namespace Hulk {
         Expr* GetIterable() const;
 
         std::string ToString() const override;
+        void accept(ExprVisitor& v) override;
     };
 
 }

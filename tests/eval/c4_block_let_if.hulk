@@ -1,0 +1,15 @@
+// Bloque: devuelve la última expresión
+print({ 1; 2; 3; });
+
+// Let/in simple
+print(let x = 10 in x * 2);
+
+// Let múltiple
+print(let a = 3, b = 4 in a * a + b * b);
+
+// If/else como expresión
+print(if (1 > 0) "positivo" else "negativo");
+
+// If/elif/else
+let n = 0 in
+    print(if (n > 0) "pos" elif (n < 0) "neg" else "cero");

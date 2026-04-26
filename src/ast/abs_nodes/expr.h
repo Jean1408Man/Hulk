@@ -6,10 +6,13 @@
 
 namespace Hulk {
 
+    class ExprVisitor;
+
     class Expr : public ASTnode {
     public:
         hulk::common::Span span {};
         virtual ~Expr() = default;
+        virtual void accept(ExprVisitor& v) = 0;
     };
 
 }

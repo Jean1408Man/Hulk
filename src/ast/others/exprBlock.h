@@ -18,6 +18,7 @@ namespace Hulk {
         Expr* GetLast() const;
 
         std::string ToString() const override;
+        void accept(ExprVisitor& v) override;
     };
 
 }

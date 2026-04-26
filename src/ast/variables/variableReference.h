@@ -18,6 +18,7 @@ namespace Hulk {
         std::string GetName() const;
 
         std::string ToString() const override;
+        void accept(ExprVisitor& v) override;
     };
 
 }

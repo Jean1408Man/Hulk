@@ -34,6 +34,7 @@ namespace Hulk {
         Expr* GetBody() const;
 
         std::string ToString() const override;
+        void accept(DeclVisitor& v) override;
     };
 
 }

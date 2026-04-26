@@ -1,0 +1,22 @@
+type Animal(name) {
+    name = name;
+    speak() => print("...");
+}
+
+type Dog(name) inherits Animal(name) {
+    speak() => print("Woof! Soy " @ self.name);
+}
+
+type Cat(name) inherits Animal(name) {
+    speak() => print("Miau! Soy " @ self.name);
+}
+
+let d = new Dog("Rex") in d.speak();
+let c = new Cat("Mishi") in c.speak();
+
+// is: verificar tipo en runtime
+let a = new Dog("Buddy") in {
+    print(a is Dog);
+    print(a is Animal);
+    print(a is Cat);
+};

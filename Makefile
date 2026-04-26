@@ -1,6 +1,14 @@
-CXX := g++
+SHELL    := bash
+CXX      := g++
 CXXFLAGS := -std=c++20 -Wall -Wextra -pedantic -Isrc
+# Flags sin warnings para código generado por Bison (parser.cpp / parser.hpp)
+CXXFLAGS_BISON := -std=c++20 -w -Isrc
 
+OBJDIR := build
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Fuentes compartidas: lexer + todos los nodos del AST + accept() centralizado
+# ─────────────────────────────────────────────────────────────────────────────
 LEXER_AST_SRCS := \
 	src/lexer/lexer.cpp \
 	src/ast/literales/number.cpp \
@@ -23,8 +31,14 @@ LEXER_AST_SRCS := \
 	src/ast/functions/functionDecl.cpp \
 	src/ast/loops/for.cpp \
 	src/ast/loops/while.cpp \
+	src/ast/others/baseCall.cpp \
 	src/ast/others/exprBlock.cpp \
+	src/ast/others/group.cpp \
 	src/ast/others/program.cpp \
+	src/ast/others/selfRef.cpp \
+	src/ast/vectors/vectorLiteral.cpp \
+	src/ast/vectors/vectorIndex.cpp \
+	src/ast/vectors/vectorGenerator.cpp \
 	src/ast/types/asExpr.cpp \
 	src/ast/types/isExpr.cpp \
 	src/ast/types/memberAccess.cpp \
@@ -32,18 +46,47 @@ LEXER_AST_SRCS := \
 	src/ast/types/newExpr.cpp \
 	src/ast/types/typeDecl.cpp \
 	src/ast/types/typeMemberAttribute.cpp \
-	src/ast/types/typeMemberMethod.cpp
+	src/ast/types/typeMemberMethod.cpp \
+	src/ast/accept_impl.cpp
 
-PARSER_SRCS := \
-	src/parser/parser.cpp \
-	src/parser/parser_driver.cpp \
-	src/parser/parser_lexer_adapter.cpp \
-	src/parser/main.cpp
+EVAL_SRCS := \
+	src/objects/hulk_value.cpp \
+	src/eval/evaluator.cpp
 
-.PHONY: all parser-gen lexer parser-demo parser-tests clean
+# Objetos pre-compilados (se reusan entre targets para no recompilar Bison)
+LEXER_AST_OBJS := $(patsubst src/%.cpp,$(OBJDIR)/%.o,$(LEXER_AST_SRCS))
+PARSER_OBJS    := $(OBJDIR)/parser/parser.o \
+                  $(OBJDIR)/parser/parser_driver.o \
+                  $(OBJDIR)/parser/parser_lexer_adapter.o
+EVAL_OBJS      := $(patsubst src/%.cpp,$(OBJDIR)/%.o,$(EVAL_SRCS))
 
-all: lexer parser-demo
+.PHONY: all parser-gen lexer parser-demo parser-tests eval eval-tests clean
 
+all: lexer parser-demo eval
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Directorios de objetos
+# ─────────────────────────────────────────────────────────────────────────────
+$(OBJDIR)/%.o: src/%.cpp
+	@mkdir -p $(dir $@)
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+# parser.cpp es código Bison generado: compilar sin -Wall/-Wextra para no colgarse
+$(OBJDIR)/parser/parser.o: src/parser/parser.cpp
+	@mkdir -p $(OBJDIR)/parser
+	$(CXX) $(CXXFLAGS_BISON) -c $< -o $@
+
+$(OBJDIR)/parser/parser_driver.o: src/parser/parser_driver.cpp
+	@mkdir -p $(OBJDIR)/parser
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+$(OBJDIR)/parser/parser_lexer_adapter.o: src/parser/parser_lexer_adapter.cpp
+	@mkdir -p $(OBJDIR)/parser
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Targets de binarios
+# ─────────────────────────────────────────────────────────────────────────────
 parser-gen:
 	bison -d -o src/parser/parser.cpp src/parser/grammar.y
 
@@ -53,12 +96,28 @@ lexer:
 		src/lexer/lexer.cpp \
 		-o hulk_lexer
 
-parser-demo: parser-gen
+parser-demo: $(LEXER_AST_OBJS) $(PARSER_OBJS)
+	@mkdir -p $(OBJDIR)/parser_main
+	$(CXX) $(CXXFLAGS) -c src/parser/main.cpp -o $(OBJDIR)/parser_main/main.o
 	$(CXX) $(CXXFLAGS) \
-		$(LEXER_AST_SRCS) \
-		$(PARSER_SRCS) \
+		$(LEXER_AST_OBJS) $(PARSER_OBJS) \
+		$(OBJDIR)/parser_main/main.o \
 		-o hulk_parser_demo
 
+# ─────────────────────────────────────────────────────────────────────────────
+# Evaluador (cortes 4, 5 y 6)
+# ─────────────────────────────────────────────────────────────────────────────
+eval: $(LEXER_AST_OBJS) $(PARSER_OBJS) $(EVAL_OBJS)
+	@mkdir -p $(OBJDIR)/eval_main
+	$(CXX) $(CXXFLAGS) -c src/eval/main.cpp -o $(OBJDIR)/eval_main/main.o
+	$(CXX) $(CXXFLAGS) \
+		$(LEXER_AST_OBJS) $(PARSER_OBJS) $(EVAL_OBJS) \
+		$(OBJDIR)/eval_main/main.o \
+		-o hulk_eval
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Tests
+# ─────────────────────────────────────────────────────────────────────────────
 parser-tests: parser-demo
 	@for f in tests/parser/*.hulk; do \
 		echo "===== $$f ====="; \
@@ -66,5 +125,25 @@ parser-tests: parser-demo
 		echo; \
 	done
 
+eval-tests: eval
+	@echo "=== Corte 4: expresiones básicas ==="; \
+	for f in tests/eval/c4_*.hulk; do \
+		echo "----- $$f -----"; \
+		./hulk_eval $$f || true; \
+		echo; \
+	done; \
+	echo "=== Corte 5: variables y funciones ==="; \
+	for f in tests/eval/c5_*.hulk; do \
+		echo "----- $$f -----"; \
+		./hulk_eval $$f || true; \
+		echo; \
+	done; \
+	echo "=== Corte 6: objetos y herencia ==="; \
+	for f in tests/eval/c6_*.hulk; do \
+		echo "----- $$f -----"; \
+		./hulk_eval $$f || true; \
+		echo; \
+	done
+
 clean:
-	rm -f hulk_lexer hulk_parser_demo
+	rm -rf $(OBJDIR) hulk_lexer hulk_parser_demo hulk_eval

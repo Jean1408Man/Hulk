@@ -1,0 +1,12 @@
+type Counter(start) {
+    count = start;
+    increment() => { self.count := self.count + 1; };
+    get() => self.count;
+}
+
+let c = new Counter(0) in {
+    c.increment();
+    c.increment();
+    c.increment();
+    print(c.get());
+};

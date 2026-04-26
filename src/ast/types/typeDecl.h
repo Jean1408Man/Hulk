@@ -59,6 +59,7 @@ namespace Hulk {
         const std::vector<TypeMember>& GetMembers() const;
 
         std::string ToString() const override;
+        void accept(DeclVisitor& v) override;
     };
 
 }

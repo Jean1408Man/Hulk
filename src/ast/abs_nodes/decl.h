@@ -6,10 +6,13 @@
 
 namespace Hulk {
 
+    class DeclVisitor;
+
     class Decl : public ASTnode {
     public:
         hulk::common::Span span {};
         virtual ~Decl() = default;
+        virtual void accept(DeclVisitor& v) = 0;
     };
 
 }
