@@ -60,7 +60,18 @@ SEMANTIC_SRCS := \
 	src/inference/type_inferencer.cpp \
 	src/typecheck/type_checker.cpp
 
+BACKEND_SRCS := \
+	src/ir/ir.cpp \
+	src/ir/ir_printer.cpp \
+	src/backend/backend.cpp \
+	src/backend/backend_driver.cpp \
+	src/backend/codegen_context.cpp \
+	src/backend/ir_gen.cpp \
+	src/backend/ir_to_cpp.cpp \
+	src/backend/name_mangler.cpp
+
 SEMANTIC_OBJS := $(patsubst src/%.cpp,$(OBJDIR)/%.o,$(SEMANTIC_SRCS))
+BACKEND_OBJS  := $(patsubst src/%.cpp,$(OBJDIR)/%.o,$(BACKEND_SRCS))
 
 # Objetos pre-compilados (se reusan entre targets para no recompilar Bison)
 LEXER_AST_OBJS := $(patsubst src/%.cpp,$(OBJDIR)/%.o,$(LEXER_AST_SRCS))
@@ -69,7 +80,7 @@ PARSER_OBJS    := $(OBJDIR)/parser/parser.o \
                   $(OBJDIR)/parser/parser_lexer_adapter.o
 EVAL_OBJS      := $(patsubst src/%.cpp,$(OBJDIR)/%.o,$(EVAL_SRCS))
 
-.PHONY: all parser-gen lexer parser-demo parser-tests eval eval-tests err-tests semantic semantic-tests extension-tests run-tests update-expected clean
+.PHONY: all parser-gen lexer parser-demo parser-tests eval eval-tests err-tests semantic semantic-tests extension-tests backend backend-tests run-tests update-expected clean
 
 all: lexer parser-demo eval semantic
 
@@ -170,6 +181,17 @@ semantic: $(LEXER_AST_OBJS) $(PARSER_OBJS) $(SEMANTIC_OBJS)
 		$(OBJDIR)/semantic_main/main.o \
 		-o hulk_semantic
 
+backend: $(LEXER_AST_OBJS) $(PARSER_OBJS) $(SEMANTIC_OBJS) $(BACKEND_OBJS)
+	@mkdir -p $(OBJDIR)/backend_main
+	$(CXX) $(CXXFLAGS) -c src/backend/main.cpp -o $(OBJDIR)/backend_main/main.o
+	$(CXX) $(CXXFLAGS) \
+		$(LEXER_AST_OBJS) $(PARSER_OBJS) $(SEMANTIC_OBJS) $(BACKEND_OBJS) \
+		$(OBJDIR)/backend_main/main.o \
+		-o hulk_backend
+
+backend-tests: backend
+	@bash tests/backend/run_backend_tests.sh
+
 semantic-tests: semantic
 	@echo "=== chequeos semánticos — programas válidos ==="; \
 	for f in tests/semantic/ok_*.hulk; do \
@@ -234,4 +256,4 @@ update-expected: eval semantic
 	echo "=== Done ==="
 
 clean:
-	rm -rf $(OBJDIR) hulk_lexer hulk_parser_demo hulk_eval hulk_semantic
+	rm -rf $(OBJDIR) hulk_lexer hulk_parser_demo hulk_eval hulk_semantic hulk_backend
