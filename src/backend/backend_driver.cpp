@@ -1,10 +1,13 @@
 #include "backend_driver.h"
 
-#include "codegen_cpp.h"
+#include "codegen_error.h"
+#include "ir_gen.h"
+#include "ir_to_cpp.h"
 
 #include "../ast/others/program.h"
 #include "../common/diagnosticEngine.hpp"
 #include "../common/diagnosticRepository.hpp"
+#include "../ir/ir_printer.h"
 #include "../lexer/lexer.hpp"
 #include "../parser/parser.hpp"
 #include "../parser/parser_driver.hpp"
@@ -70,8 +73,22 @@ BackendResult BackendDriver::run(const BackendOptions& options) {
             return result;
         }
 
-        CppCodegen codegen(sem.tables(), sem.resolution_map(), sem.type_map());
-        const std::string cpp = codegen.generate(*program);
+        IRGen irgen(sem.tables(), sem.resolution_map(), sem.type_map());
+        const IR::IRProgram ir = irgen.generate(*program);
+
+        if (options.emit_ir) {
+            result.generated_ir_path = default_output_path(options);
+            const IR::IRPrinter printer;
+            if (!write_file(result.generated_ir_path, printer.print(ir))) {
+                std::cerr << "Backend: no se pudo escribir " << result.generated_ir_path << "\n";
+                return result;
+            }
+            result.ok = true;
+            return result;
+        }
+
+        const IRToCppEmitter emitter;
+        const std::string cpp = emitter.emit(ir);
 
         result.generated_cpp_path = options.emit_cpp ? default_output_path(options) : temp_cpp_path();
         if (!write_file(result.generated_cpp_path, cpp)) {
@@ -116,6 +133,9 @@ std::string BackendDriver::read_file(const std::string& path) const {
 std::string BackendDriver::default_output_path(const BackendOptions& options) const {
     if (!options.output_path.empty()) {
         return options.output_path;
+    }
+    if (options.emit_ir) {
+        return options.input_path + ".hir";
     }
     if (options.emit_cpp) {
         return options.input_path + ".cpp";

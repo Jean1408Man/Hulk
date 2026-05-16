@@ -1,0 +1,40 @@
+.TYPES
+.DATA
+s0 = "yes"
+s1 = "no"
+
+.CODE
+function hulk_main() ; kind=entry
+{
+  local hulk_tmp_number_0
+  local hulk_local_a_0
+  local hulk_tmp_number_1
+  local hulk_tmp_arith_2
+  local hulk_local_a_1
+  local hulk_tmp_if_result_3
+  local hulk_tmp_number_4
+  local hulk_tmp_cmp_5
+  local hulk_tmp_string_6
+  local hulk_tmp_print_7
+  local hulk_tmp_string_8
+  local hulk_tmp_print_9
+  hulk_tmp_number_0 = const_number 1
+  hulk_local_a_0 = move hulk_tmp_number_0
+  hulk_tmp_number_1 = const_number 1
+  hulk_tmp_arith_2 = add hulk_local_a_0 hulk_tmp_number_1
+  hulk_local_a_1 = move hulk_tmp_arith_2
+  hulk_tmp_number_4 = const_number 1
+  hulk_tmp_cmp_5 = gt hulk_local_a_1 hulk_tmp_number_4
+  jump_if_false hulk_tmp_cmp_5 L_if_next_1
+  hulk_tmp_string_6 = load_data s0
+  hulk_tmp_print_7 = builtin_print(hulk_tmp_string_6)
+  hulk_tmp_if_result_3 = move hulk_tmp_print_7
+  jump L_if_end_0
+  label L_if_next_1
+  hulk_tmp_string_8 = load_data s1
+  hulk_tmp_print_9 = builtin_print(hulk_tmp_string_8)
+  hulk_tmp_if_result_3 = move hulk_tmp_print_9
+  label L_if_end_0
+  return hulk_tmp_if_result_3
+}
+

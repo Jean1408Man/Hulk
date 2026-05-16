@@ -1,0 +1,40 @@
+.TYPES
+type Box parent Object {
+  field Box_x : Object slot 0
+  method get -> hulk_method_Box_get_2 slot 0
+}
+
+.DATA
+
+.CODE
+function hulk_init_Box_0(hulk_self_value, hulk_ctor_param_x_3) ; kind=initializer
+{
+  local hulk_tmp_field_init_0
+  hulk_tmp_field_init_0 = definefield hulk_self_value x hulk_ctor_param_x_3
+  return hulk_self_value
+}
+
+function hulk_method_Box_get_2(hulk_self_value) ; kind=method
+{
+  local hulk_tmp_field_1
+  hulk_tmp_field_1 = getfield hulk_self_value x
+  return hulk_tmp_field_1
+}
+
+function hulk_main() ; kind=entry
+{
+  local hulk_tmp_object_2
+  local hulk_tmp_number_3
+  local hulk_tmp_init_call_4
+  local hulk_local_b_4
+  local hulk_tmp_method_call_5
+  local hulk_tmp_print_6
+  hulk_tmp_object_2 = new_object Box
+  hulk_tmp_number_3 = const_number 7
+  hulk_tmp_init_call_4 = call hulk_init_Box_0(hulk_tmp_object_2, hulk_tmp_number_3)
+  hulk_local_b_4 = move hulk_tmp_object_2
+  hulk_tmp_method_call_5 = vcall hulk_local_b_4.get()
+  hulk_tmp_print_6 = builtin_print(hulk_tmp_method_call_5)
+  return hulk_tmp_print_6
+}
+

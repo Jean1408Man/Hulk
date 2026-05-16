@@ -1,0 +1,24 @@
+.TYPES
+.DATA
+
+.CODE
+function hulk_fn_inc_0(hulk_param_x_1) ; kind=global
+{
+  local hulk_tmp_number_0
+  local hulk_tmp_arith_1
+  hulk_tmp_number_0 = const_number 1
+  hulk_tmp_arith_1 = add hulk_param_x_1 hulk_tmp_number_0
+  return hulk_tmp_arith_1
+}
+
+function hulk_main() ; kind=entry
+{
+  local hulk_tmp_call_2
+  local hulk_tmp_number_3
+  local hulk_tmp_print_4
+  hulk_tmp_number_3 = const_number 4
+  hulk_tmp_call_2 = call hulk_fn_inc_0(hulk_tmp_number_3)
+  hulk_tmp_print_4 = builtin_print(hulk_tmp_call_2)
+  return hulk_tmp_print_4
+}
+

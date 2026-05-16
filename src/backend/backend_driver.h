@@ -8,12 +8,14 @@ namespace Hulk::Backend {
 struct BackendOptions {
     std::string input_path;
     std::string output_path;
+    bool emit_ir = false;
     bool emit_cpp = false;
     bool keep_temp = false;
 };
 
 struct BackendResult {
     bool ok = false;
+    std::string generated_ir_path;
     std::string generated_cpp_path;
     std::string executable_path;
 };

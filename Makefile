@@ -61,10 +61,13 @@ SEMANTIC_SRCS := \
 	src/typecheck/type_checker.cpp
 
 BACKEND_SRCS := \
+	src/ir/ir.cpp \
+	src/ir/ir_printer.cpp \
 	src/backend/backend.cpp \
 	src/backend/backend_driver.cpp \
-	src/backend/codegen_cpp.cpp \
 	src/backend/codegen_context.cpp \
+	src/backend/ir_gen.cpp \
+	src/backend/ir_to_cpp.cpp \
 	src/backend/name_mangler.cpp
 
 SEMANTIC_OBJS := $(patsubst src/%.cpp,$(OBJDIR)/%.o,$(SEMANTIC_SRCS))
